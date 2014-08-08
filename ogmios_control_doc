@@ -1,0 +1,72 @@
+Control document for Project Ogmios
+Author: Eric Ames
+Last Update: July 25th, 2014
+
+Overall, wanted to try and have simple/fun gameplay along with heavily focusing on choices,
+especially the choices of who lives/dies under your "command".
+
+Try this:
+
+	Player manages a camp of sorts, and sends out units to -explore-, -fight-, and -negotiate-.
+	Could go for mercenary band slant, or larger scale and nation-wise, but that seems a little too large.
+	Maybe continent, start with a city-state or something.
+	So now more like a text-based civ game?
+
+
+New thoughts:
+
+	Player is the titular Ogmios, have a single continent-wide map. Your power allows you to recruit others and have them fight/work/explore for you, enabling you to conquer/affect the world. So you could use units for combat, exploration, quests, diplomacy, etc.
+
+	Hopefully use the DinV rules for all resolution types. Have a couple paper docs for quick access. Main contribution will be adding NPC AI types for
+		a) deciding how many dice to Raise
+		b) conditions for Giving
+		c) something else?
+
+	Overworld map will be static during gameplay, but a new one is generated each new game.
+	Not sure whether Ogmios should be his own unit or not, decide later.
+
+	Want to have a type of faction system, in that player decision will contribute to Law, Chaos, or other.
+	Also want the world to be populated by talking bipedal animals, a la Redwall.
+	
+	Each turn also has different events trigger, causing new conflicts/quests/oppurtunities.
+	
+	Goal is to fight off the end of the world, as the End is approaching. The End can happen by supernatural (Deep Ones), war, disease, or all three. Look into other possibilities.
+
+	Starting out units deployed to different areas/quests will only appear as ascii, but later versions will hopefully use sprites if I can pull it off. The map, at least, will be sprite-tile-based.
+
+Timeline:
+
+	1) Start with the basics. Need a simple tile-map generation, for now tiles will be an ugly solid color. Get seperate provinces/cities/attractions working, along with paths. All of these have to be seperate objects.
+		REPORT: Almost finished, random map generation is a go. Need basic tile-checking for generation, along with
+			tile-lookup for move speed and other tile abilities/functions (especially cities/ruins/towns).
+		UPDATE: Everything's done, but generation will need to change for new direction: need city tileset, and gen roads/houses.
+		Can complicate later.
+
+	Temp MS: Refactor map/world storage and gen to be seperate Object. Add images folder, global path extension. Add load_images() to
+			main.lua. General refactoring- better now than later!
+
+	2) Figure out unit stats, creation-wise. Have a couple placeholders, and move on to
+
+	3) Player interaction, so assigning units to areas, and having them come back at the end of the conflict.
+
+	MAP MILESTONE: At this point, should have an ugly-but-working overworld map with distinct areas in each province that can be clicked on and chosen for unit deployment. The units will leave the player's roster and move towards the event, and then be un-selectable for the duration of the event. Similar to RISK.
+
+	4) A little murky here, but should probably start distunguishing and fleshing out Ally and Enemy units, work on event resolution. At the same time, will need to create a few generic events with one each for combat, diplomacy, random quest, etc. This will take a while.
+
+	SYSTEM MILESTONE: Now the DinV rules have been applied, and having a unit assigned to an event actually triggers conflict resolution, and an outcome.
+
+	Now the edge stuff, such as game start/end, saving, and event variations begins.
+
+	5) Create a large roster of events, each mostly unique, and assign win conditions, flavor text, and outcomes.
+
+	6) Create a large number of unique characters as possible allies, giving each flavor text and sensible statistics as needed. Implement conversation system somehow.
+
+	SETTING MILESTONE: Events and allies now have faces that contribute to game immersion.
+
+	7) Now touch-up stuff, such as better map sprites, possible unit sprites, audio, and game saving. If saving can be implemented earlier by having really simple load files, that would be acceptable too. Maye sprite animations?
+
+	8) Everything I forgot.
+
+	ALPHA MILESTONE: The alpha build is ready! Test for stability and shove it onto Logan for system testing.
+
+	The beta build will incorporate whatever changes I ring out of Logan / Ian / Andrew.
