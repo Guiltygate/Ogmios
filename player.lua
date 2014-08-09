@@ -9,8 +9,10 @@ player.disp_pixel_x = 0
 player.disp_pixel_y = 0
 player.from_center_x = 0
 player.from_center_y = 0
+
 player.image = ""
 player.icon = ""
+
 player.world_x = 0
 player.world_y = 0
 player.offset_x = 0
@@ -22,6 +24,7 @@ function player:new( icon, image, off_x, off_y, TS )
 	new_player = {}
 	setmetatable( new_player, self )
 	self.__index = self
+
 	new_player.image = image
 	new_player.icon = icon
 	new_player.offset_x = off_x
@@ -29,6 +32,8 @@ function player:new( icon, image, off_x, off_y, TS )
 
 	return new_player
 end
+
+
 
 function player:draw( TS, scale )
 	love.graphics.draw( self.image, self.icon, (( self.offset_x * TS ) + self.disp_pixel_x) * scale, (( self.offset_y * TS ) + self.disp_pixel_y) * scale, 0, scale, scale )
@@ -40,6 +45,7 @@ function player:update_loc( disp_x, disp_y )
 	self.world_x = offset_x + self.from_center_x + disp_x
 	self.world_y = self.offset_y + self.from_center_y + disp_y
 end
+
 
 
 function player:move( key, world, disp_x, disp_y, world_height, world_width)
@@ -102,10 +108,12 @@ function player:move( key, world, disp_x, disp_y, world_height, world_width)
    return disp_x, disp_y, build, move
 end
 
+
 function player:pixel_move( dt, TS )
 	self.disp_pixel_x = self.disp_pixel_x - ( (self.disp_pixel_x - (self.from_center_x*TS) ) * dt * 10 )
 	self.disp_pixel_y = self.disp_pixel_y - ( (self.disp_pixel_y - (self.from_center_y*TS) ) * dt * 10 )
 
 end
+
 
 return player

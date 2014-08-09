@@ -19,7 +19,7 @@
 
 
 local map = {}
-local map_settings = {	70, 0, 20, 10 } --enter probabilities in order corresponding to tile names from main.lua
+local map_settings = {	90, 0, 5, 5 } --enter probabilities in order corresponding to tile names from main.lua
 local TS = 32
 map.config = {}
 map.tile_images = {}

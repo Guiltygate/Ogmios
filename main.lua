@@ -11,6 +11,8 @@
 	window is the actual size of the game window, in pixels. It's only used to build a scale factor, so the game will
 		run the same regardless of the player's choice of window size.
 
+	at some point, need to seperate Map and Display as seperate O2s, to keep main.lua clean.
+
 --]]
 
 --============ Globals =================
@@ -19,20 +21,17 @@ local window_height, window_width			--dimensions of the window in pixels as chos
 local TS = 32
 local world_height_tiles = 360; local world_width_tiles = 640
 local world_height = world_height_tiles * TS; local world_width = world_width_tiles * TS
-local display = { xpos = 0, ypos = 0, xpos_pixel = 0, ypos_pixel = 0, height = 18, width = 32, offset_x = 0, offset_y = 0 }	
-local current_world_tile_x, current_world_tile_y
 local build = false
+local disp_height = 18; local disp_width = 32;
 local img_dir = "images/"
 
 --======================================
 
 function love.load()							--as far as I can tell, these are all global.
+	window_height = love.window.getHeight();			window_width = love.window.getWidth();	--window size
 	load_libraries()
 
-	window_height = love.window.getHeight();			window_width = love.window.getWidth();	--window size
 	scale = window_height / ( display.height * TS )
-	speech_bubble = { ypos = window_height - window_height / 6, xpos = window_width / 4, show = false, text = "",
-			 width = (window_width/2), height = (window_height/4) }
 	offset_x = display.width / 2;						offset_y = display.height / 2 			--TILES
 
 	math.randomseed( os.time() )				--set random seed value for map generation
@@ -45,6 +44,8 @@ function love.load()							--as far as I can tell, these are all global.
 	world = map.play_god( world_width_tiles, world_height_tiles )
 	build_tileset_batch()
 
+
+	--
 	knight = npc:new( "Elder Knight", knight_image, knight_icon, 5, 5, TS, "Hail!")
 	print( world[ 5 ][ 5 ]:set_ocpied( knight ) )
 
@@ -53,6 +54,7 @@ function love.load()							--as far as I can tell, these are all global.
 
 	knight2 = npc:new( "Youngest Knight", knight_image, knight_icon, 8, 16, TS, "Fox!")
 	print( world[ 8 ][ 16 ]:set_ocpied( knight2 ) )
+	--
 
 
 end
@@ -60,18 +62,17 @@ end
 
 function love.draw()
 	love.graphics.draw( tileset_batch, -display.xpos_pixel*scale , -display.ypos_pixel*scale , 0, scale, scale )			--Now with SpriteBatch, this draws the entire world!
+
 	pc:draw( TS, scale )
 	knight:draw( TS, scale, display )
 	knight1:draw( TS, scale, display )
 	knight2:draw( TS, scale, display )
+	display:draw_text()
+	--npcs:draw()
+
   	love.graphics.print("FPS: "..love.timer.getFPS(), 10, 20)
   	love.graphics.print("Pos: "..display.xpos.." "..display.ypos, 10, 40)
   	love.graphics.print("Self Pos: "..pc.from_center_x.." "..pc.from_center_y, 10, 60)
-
-  	if speech_bubble.show then
-  		love.graphics.rectangle( "line", speech_bubble.xpos, speech_bubble.ypos,  speech_bubble.width, speech_bubble.height)
-  		love.graphics.print( speech_bubble.text, speech_bubble.xpos + 50, speech_bubble.ypos+50 )
-  	end
 
 end
 
@@ -82,27 +83,20 @@ function love.keypressed(key, isrepeat)
 
 	display.xpos, display.ypos, build, move = pc:move( key, world, display.xpos, display.ypos, world_height_tiles, world_width_tiles )
 
-	if move or build then
-		speech_bubble.show = false
-	end
+	if move or build then display:show_text() end
 
 
 	if key == 'u' and scale < 4 then scale = scale * 1.5
    	elseif key == 'i' and scale > 1 then scale = scale / 1.5
    	end
 
-	if key == "j" then	--interact_pc()
-	end
-
-	if key == "o" then
-		interact()
-	end
+	if key == "e" then interact() end	--move interact as player.lua function
 
 end
 
 
 
-function love.update(dt)
+function love.update( dt )
 	pc:update_loc( display.xpos, display.ypos)
 	pc:pixel_move( dt, TS )
 	
@@ -111,9 +105,7 @@ function love.update(dt)
 		build = false
 	end
 
-	display.xpos_pixel = display.xpos_pixel - ( (display.xpos_pixel - (display.xpos*TS) ) * dt * 10 )
-	display.ypos_pixel = display.ypos_pixel - ( (display.ypos_pixel - (display.ypos*TS) ) * dt * 10 )
-
+	display:update( dt, TS, 10 )
 
 end
 
@@ -136,25 +128,13 @@ function build_tileset_batch()			--used to more efficiently store tiles for draw
 end
 
 
-function interact()
-	if pc.ori == 'n' and world[ pc.world_x ][ pc.world_y - 1 ]:is_ocpied() then
-		speech_bubble.text = world[ pc.world_x ][ pc.world_y - 1 ].holds.speech
-		speech_bubble.show = true
+function interact()						--move as player.lua function
 
-	elseif pc.ori == 's' and world[ pc.world_x ][ pc.world_y + 1 ]:is_ocpied() then
-		speech_bubble.text = world[ pc.world_x ][ pc.world_y + 1 ].holds.speech
-		speech_bubble.show = true
-
-	elseif pc.ori == 'w' and world[ pc.world_x - 1][ pc.world_y ]:is_ocpied() then
-		speech_bubble.text = world[ pc.world_x - 1][ pc.world_y ].holds.speech
-		speech_bubble.show = true
-
-	elseif pc.ori == 'e' and world[ pc.world_x + 1][ pc.world_y ]:is_ocpied() then
-		speech_bubble.text = world[ pc.world_x + 1][ pc.world_y ].holds.speech
-		speech_bubble.show = true
+	if world_get( pc.ori, pc ):is_ocpied() then
+		display:show_text( get_resident( pc.ori, pc ).speech )
 	end
-end
 
+end
 
 
 
@@ -164,7 +144,8 @@ function load_libraries()
 	map = require( "map" );				tile = require( "tile" )
 	aal = require( "AnAL" );			template = require( "area_template" )
 	district = require( "district" );	player = require( "player" )
-	npc = require( "npc" )
+	npc = require( "npc" );				
+	display = require( "disp" ):new( disp_height, disp_width, window_height, window_width )
 end
 
 function load_images()
@@ -182,6 +163,24 @@ function load_images()
 	knight_icon = love.graphics.newQuad( 0, 0, TS, TS, knight_image:getWidth(), knight_image:getHeight() )
 end
 
-function in_bounds( x_map_pos, y_map_pos )
-	return ( x_map_pos < world_width_tiles and x_map_pos >= 0 and y_map_pos < world_height_tiles and y_map_pos >= 0 )
+function in_bounds( x, y )
+	return ( x < world_width_tiles and x >= 0 and y < world_height_tiles and y >= 0 )
+end
+
+function world_get( dir, char )			--move as map.world.lua functoin?
+	if dir == 'n' then
+		return world[ char.world_x ][ char.world_y - 1]
+	elseif dir == "s" then
+		return world[ char.world_x ][ char.world_y + 1]
+	elseif dir == "w" then
+		return world[ char.world_x - 1][ char.world_y ]
+	elseif dir == "e" then
+		return world[ char.world_x + 1][ char.world_y ]
+	end
+end
+
+function get_resident( dir, char )		--move as map.world.lua function?
+	value = world_get( dir, char ).holds
+	print( value.speech )
+	return value
 end
