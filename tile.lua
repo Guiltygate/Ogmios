@@ -6,14 +6,14 @@
 
 local tile = {}
 tile.ocpied = false
-tile.holds = { name = "Nobody" }
+tile.holds = { name = "Nobody", speech = "Nothing's here..." }
 tile.passable = true
 tile.type = "nope"
 tile.all_names = { "path", "nope", "brick", "sea"}
-tile.all_types = { path = { passable = true,	prob = 70},
+tile.all_types = { path = { passable = true,	prob = 90},
 				 nope 	= { passable = false,	prob = 0},
-				 brick 	= { passable = false,	prob = 30}, 
-				 sea 	= { passable = false,	prob = 0} }
+				 brick 	= { passable = false,	prob = 5}, 
+				 sea 	= { passable = false,	prob = 5} }
 
 
 function tile:new( type )
@@ -26,9 +26,15 @@ function tile:new( type )
 end
 
 
-function tile:set_ocpied( npc )
-	self.holds = npc or { name = "Nobody" }
-	if npc then self.ocpied = true end
+function tile:set_ocpied( npc, clear )
+	if clear then
+		self.holds = { name = "Nobody" }
+		self.ocpied = false
+	else
+		self.holds = npc
+		self.ocpied = true
+	end
+		
 end
 
 

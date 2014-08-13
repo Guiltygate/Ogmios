@@ -18,18 +18,17 @@
 ]]
 
 
+package.path = "Ogmios/sub_objects/?.lua"
+
+
 local map = {}
 local map_settings = {	90, 0, 5, 5 } --enter probabilities in order corresponding to tile names from main.lua
 local TS = 32
 map.config = {}
 map.tile_images = {}
---[[
-local map_settings = {}
-count = 1
+--world = require("world"):new()
+map.world = {}
 
-for k,v in pairs( tile.all_type ) do
-	map_settings[ count ]
---]]
 
 --============ Actual Functions ===========================
 
@@ -71,28 +70,81 @@ function map.load_map_tiles( tileset_width_in_pixels, tileset_height_in_pixels, 
 end
 
 
-function map.play_god( world_width_in_tiles, world_height_in_tiles )
-	local world = {}
+function map:create_world( world_width_in_tiles, world_height_in_tiles )
 	local tile = require( "tile" )
 
 	for i=0,world_width_in_tiles-1 do
-		world[ i ] = {}
+		self.world[ i ] = {}
 		for j=0,world_height_in_tiles-1 do
 			choice = math.random() * 100
 			for k,v in pairs( map.config ) do
 				if choice <= v then 
-					world[ i ][ j ] = tile:new( k )
+					self.world[ i ][ j ] = tile:new( k )
 					break
 				end
 			end
 
 			if i == 0 or j == 0 or i == world_width_in_tiles-1 or j == world_height_in_tiles-1 then 			--prototype code for boundary marking
-				world[ i ][ j ] = tile:new( "sea" )
+				self.world[ i ][ j ] = tile:new( "sea" )
 			end
 
 		end
 	end
-	return world
+
+	self.world.height_tiles = world_height_in_tiles
+	self.world.width_tiles = world_width_in_tiles
+
 end
+
+
+function map:build_tileset_batch( display, TS )			--used to more efficiently store tiles for drawing - GREATLY increases FPS!  
+	self.tileset_batch:bind()
+	self.tileset_batch:clear()
+
+	for i=-1,( display.width  ) do
+		for j=-1,( display.height ) do
+			x_map_pos = i + display.xpos
+			y_map_pos = j + display.ypos
+
+			if self:in_bounds( x_map_pos, y_map_pos ) then		--Check added b/c of drawing a +/-1 buffer for x and y
+				self.tileset_batch:add( self.tile_images[ self.world[ x_map_pos ][ y_map_pos ].type ], x_map_pos*TS, y_map_pos*TS )
+			end
+		end
+	end
+	self.tileset_batch:unbind()
+end
+
+
+function map:get_tile_obj( dir, char )			--move as map.world.lua functoin?
+	if dir == 'n' then
+		return self.world[ char.world_x ][ char.world_y - 1]
+	elseif dir == "s" then
+		return self.world[ char.world_x ][ char.world_y + 1]
+	elseif dir == "w" then
+		return self.world[ char.world_x - 1][ char.world_y ]
+	elseif dir == "e" then
+		return self.world[ char.world_x + 1][ char.world_y ]
+	end
+end
+
+
+
+function map:get_tile_resident( dir, char )		--move as map.world.lua function?
+	value = self:get_tile_obj( dir, char ).holds
+	return value
+end
+
+
+function map:in_bounds( x, y )
+	return ( x < self.world.width_tiles and x >= 0 and y < self.world.height_tiles and y >= 0 )
+end
+
+
+
+function map:set_tile_ocpied( npc )
+	if npc then map.world[ npc.world_x ][ npc.world_y ]:set_ocpied( npc ) end
+end
+
+
 
 return map

@@ -15,20 +15,15 @@ npc.pixel_x = 0
 npc.pixel_y = 0
 npc.speech = "FHATAGHN"
 
-function npc:new( name, image, quad, x, y, TS, speech)
-	new_npc = {}
+function npc:new( param_table, TS )--name, image, quad, x, y, TS, speech )
+	new_npc = param_table
 	setmetatable( new_npc, self )
 	self.__index = self
 
-	new_npc.name = name
-	new_npc.image = image
-	new_npc.quad = quad
-	new_npc.world_x = x
-	new_npc.world_y = y
-	new_npc.speech = speech
-
 	new_npc.pixel_x = new_npc.world_x * TS
 	new_npc.pixel_y = new_npc.world_y * TS
+
+	map:set_tile_ocpied( new_npc )
 
 	return new_npc
 end

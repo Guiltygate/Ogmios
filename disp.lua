@@ -5,7 +5,7 @@ display.lua!
 
 ]]
 
-package.path = "test_game/sub_objects/?.lua"
+package.path = "Ogmios/sub_objects/?.lua"
 
 disp = {}
 msg_box = require( "msg_box" )
@@ -44,5 +44,10 @@ function disp:update( dt, TS, speed)
 	self.ypos_pixel = self.ypos_pixel - ( (self.ypos_pixel - (self.ypos*TS) ) * dt * speed )
 
 end
+
+function disp:draw( TS, tileset_batch, scale )
+	love.graphics.draw( tileset_batch, -self.xpos_pixel*scale , -self.ypos_pixel*scale , 0, scale, scale )			--Now with SpriteBatch, this draws the entire world!
+end
+
 
 return disp

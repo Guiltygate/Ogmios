@@ -42,7 +42,7 @@ end
 
 
 function player:update_loc( disp_x, disp_y )
-	self.world_x = offset_x + self.from_center_x + disp_x
+	self.world_x = self.offset_x + self.from_center_x + disp_x
 	self.world_y = self.offset_y + self.from_center_y + disp_y
 end
 
