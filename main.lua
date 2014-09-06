@@ -21,8 +21,9 @@ local window_height, window_width			--dimensions of the window in pixels as chos
 local TS = 32
 local chosen_world_height = 360; local chosen_world_width = 640
 local build = false
-local disp_height = 18; local disp_width = 32;
+local disp_height = 11; local disp_width = 19;
 local img_dir = "images/"
+local start_coord = {x=10, y=6}
 
 --======================================
 
@@ -43,13 +44,9 @@ function love.load()							--as far as I can tell, these are all global.
 	map.load_map_tiles( map_tileset:getWidth(), map_tileset:getHeight(), TS, tile_names )
 
 	map:create_world( chosen_world_width, chosen_world_height )
-	map:build_tileset_batch( display, TS 
-		)
-	npc_manager:load_npcs( "std_npc_load" )
+	map:build_tileset_batch( display, TS )
+	manager:load_npcs( "std_npc_load", pc )
 
-
-	--npc_manager:add( false, knight ); npc_manager:add( false, knight1 ); npc_manager:add( false, knight2 );
-	--
 
 
 end
@@ -58,50 +55,47 @@ end
 function love.draw()
 	display:draw( TS, map.tileset_batch, scale )
 
-	pc:draw( TS, scale )
+	manager:draw( TS, scale, display, pc, map )
+
 	display:draw_text()
-	npc_manager:draw( TS, scale, display )
+	--display:draw_high_layer()			--add later, for passable tiles that are "sticking up", must be drawn over characters; e.g. walls, fog, etc.
 
 	debug()
 
 end
 
-
+--[
 function love.keypressed(key, isrepeat)
-	build = false
-	move = false
-
-	display.xpos, display.ypos, build, move = pc:move( key, map.world, display.xpos, display.ypos, map.world.height_tiles, map.world.width_tiles )
-
-	if move or build then display:show_text() end
-
-
-	if key == 'u' and scale < 4 then scale = scale * 1.5
-   	elseif key == 'i' and scale > 1 then scale = scale / 1.5
-   	end
 
 	if key == "e" then interact() end	--move interact as player.lua function
 
-end
+	if key == 'f' then pc:attacking( true ) end
 
+	if key == 'v' then pc:add_to_party( map, display, manager ) end
+
+end
+--]]
 
 
 function love.update( dt )
-	pc:update_loc( display.xpos, display.ypos)
-	pc:pixel_move( dt, TS )
-	
+	build, move = pc:move( map, display )
+
+	if move or build then display:show_text() end	--Clear text box if player moves
+
+	manager:update( dt, TS, map, pc )
+
 	if build then
 		map:build_tileset_batch( display, TS )
 		build = false
 	end
 
-	display:update( dt, TS, 10 )
+	display:update_pixel( dt, TS, 6, pc )		--TODO decide on variable for disp / player / npc speed, don't leave magic
 
 end
 
 function interact()						--move as player.lua function
 
-	if map:get_tile_obj( pc.ori, pc ):is_ocpied() then
+	if map:get_tile_obj( pc ):is_ocpied() then
 		display:show_text( map:get_tile_resident( pc.ori, pc ).speech )
 	end
 
@@ -121,18 +115,19 @@ function load_libraries()
 	map = require( "map" );				tile = require( "tile" )
 	aal = require( "AnAL" );			template = require( "area_template" )
 	district = require( "district" );	player = require( "player" )
-	npc = require( "npc" );				npc_manager = require( "manager" )
+	npc = require( "npc" );				manager = require( "manager" )
 	display = require( "disp" ):new( disp_height, disp_width, window_height, window_width )
 end
 
 function load_images()
 	pc_image = love.graphics.newImage( img_dir.."fox.png" )
-	pc_image:setFilter( "nearest", "nearest" )
+	pc_image:setFilter( "nearest" )
 	pc_icon = love.graphics.newQuad( 0, 0, TS, TS, pc_image:getWidth(), pc_image:getHeight() )
-	pc = player:new( pc_icon, pc_image, display.width / 2, display.height / 2, TS )
+	local offset = { x = ((display.width/2)+0.5), y = ((display.height/2)+0.5) }
+	pc = player:new( pc_icon, pc_image, offset, TS )
 
 	map_tileset = love.graphics.newImage( img_dir.."map_tile_placeholders2.png" )
-	map_tileset:setFilter( "nearest", "nearest")
+	map_tileset:setFilter( "nearest" )
 	map.tileset_batch = love.graphics.newSpriteBatch( map_tileset, (display.height + 2) * (display.width + 2) )
 
 end
@@ -140,6 +135,7 @@ end
 
 function debug()
 	love.graphics.print("FPS: "..love.timer.getFPS(), 10, 20)
-  	love.graphics.print("Pos: "..display.xpos.." "..display.ypos, 10, 40)
+  	love.graphics.print("Pos: "..display.world_x.." "..display.world_y, 10, 40)
   	love.graphics.print("Self Pos: "..pc.from_center_x.." "..pc.from_center_y, 10, 60)
+  	love.graphics.print("Self World: "..pc.world_x.." "..pc.world_y, 10, 80)
 end

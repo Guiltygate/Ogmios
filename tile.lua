@@ -6,7 +6,7 @@
 
 local tile = {}
 tile.ocpied = false
-tile.holds = { name = "Nobody", speech = "Nothing's here..." }
+tile.holds = { name = "Nobody" }
 tile.passable = true
 tile.type = "nope"
 tile.all_names = { "path", "nope", "brick", "sea"}
@@ -43,6 +43,8 @@ function tile:is_ocpied() return self.ocpied end
 function tile:type() return self.type end
 
 function tile:pass() return (self.passable and not self.ocpied) end
+
+function tile:get_ocpied() return self.holds end
 
 
 return tile

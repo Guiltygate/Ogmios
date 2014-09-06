@@ -34,7 +34,7 @@ animation.__index = animation
 -- @param delay The delay between two frames
 -- @param frames The number of frames, 0 for autodetect
 -- @return The created animation
-function newAnimation(image, fw, fh, delay, frames)
+function newAnimation(image, fw, fh, delay, frames, start_x, start_y)
 	local a = {}
 	a.img = image
 	a.frames = {}
@@ -47,6 +47,8 @@ function newAnimation(image, fw, fh, delay, frames)
 	a.speed = 1
 	a.mode = 1
 	a.direction = 1
+	start_x = start_x or 0
+	start_y = start_y or 0
 	local imgw = image:getWidth()
 	local imgh = image:getHeight()
 	if frames == 0 then
@@ -56,11 +58,11 @@ function newAnimation(image, fw, fh, delay, frames)
 	for i = 1, frames do
 		local row = math.floor((i-1)/rowsize)
 		local column = (i-1)%rowsize
-		local frame = love.graphics.newQuad(column*fw, row*fh, fw, fh, imgw, imgh)
+		local frame = love.graphics.newQuad( (column+start_x)*fw, (row+start_y)*fh, fw, fh, imgw, imgh )
 		table.insert(a.frames, frame)
 		table.insert(a.delays, delay)
 	end
-	return setmetatable(a, animation)
+	return setmetatable( a, animation )
 end
 
 --- Update the animation

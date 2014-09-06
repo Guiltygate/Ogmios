@@ -1,0 +1,110 @@
+				
+				Proposed Rulset "Beast Souls"
+
+	Combat is grid-based and turn-based, but takes place in "real-time". The PC
+	and every NPC take a turn in order, based on a listing sorted by the
+	Reflex and Snout stats, but time does not pause for actions to be taken.
+	So to the player, the combat feels like real-time, but behind the scenes,
+	each character action is happening in a certain order, at a certain time,
+	with no discernable wait. Of course, the downside is if the player fails
+	to react in time, and every other character takes an action.
+
+	To help relieve this, each action takes a certain amount of time based on
+	the animation, and also costs stamina to use. Total stamina and stamina
+	regen are based off of the Lung and Blood stats respectively.
+
+	It's worth noting that, IF it doesn't prove too complex balance-wise, a 
+	non-grid system may be implemented. Easy to implement, but may make system
+	unstable?
+
+
+	Major Stats
+		Muscle		Physical strength. Used for Intimidation, Melee Hit / Damage.
+		Reflex		Physical reflexes. Used for Ranged Hit, dodging attacks.
+		Lung		Denotes max stamina, along with aiding Singing (Hymns) and Chanting (Rituals)
+		Instinct	How in touch with nature a character is, denotes shamanistic skill (Rituals)
+		Mind		Dictates ability to remember complex patterns (Hexes) and academic skills.
+		Snout		Perception / Awareness. Used for tracking, dodging.
+		Aura		How in touch with the world a character is, denotes concentration (Hymns)
+		Blood		Used for stamina regen along with HP. Similar to Vitality?
+		Fur			Charisma, plain and simple. Convince/Persuade.
+		Paw			Dexterity of paws. Used for lockpicking, alchemy work, anything hand-related.
+
+		Each stat score is the number of six-sided die rolled for that stat.
+
+		
+	Current thoughts for leveling are:
+
+		Each character starts with a max of 30 pts, maxed at 5(ish) per stat.
+
+		Every time a character uses a stat (makes a check), they gain XP based on
+		the difficulty of the check.
+
+		XP gained = Obstacle - stat [- other relevant stats ] [- mods ]
+
+		So if the obstacle is difficult, but the player has a bunch of helpful
+		mods and stats, the XP gained is lower than if the player had fewer
+		mods. So the more difficult a check is, the better, especially since the
+		character doesn't have to succeed.
+
+		Abuse of this is curbed by the fact the player's time is limited- they
+		can't keep making checks over and over without giving up time that could
+		be spent on other things, or exhausting their party members.
+
+=========================== Side Note ===================================================
+	Each character regains all HP at the end of a battle, but the HP
+	lost during battle contributes to a 'fatigue meter' that is persistent. Fatigue
+	only restores based on the number of "arcs" spent resting. The world works on a 
+	time scale of 8 arcs a day, 1 arc for 3 hours. 3 game hours = 1 arc = 8 real world minutes.
+	So the conversion is 1 game hour = ~2.75 real minutes (ignore rounding). It has to be fast,
+	since I wanted the game to be 3 months long... which would be 90 hours
+	( but you can skip time! )
+	Thought on this would also be appreciated.
+==================================================================================================
+
+		Checks that include multiple stats work as expected, with both gaining
+		a small amount of XP.
+
+		Needed checks to increase stat: Stat X -> Stat Y requires X * 10 XP. 
+		E.g. increasing Reflex 1 to Reflex 2 requires 10 points. 2 -> 3, 20 points.
+		Not sure if linear is the right way to go, exponential is more typical?
+		Have any thoughts on this?
+
+		Haven't worked out the math yet, but Stat XP gain is granted bonuses
+		from Roles. Each character starts with a Role, and can gain additional ones
+		by spending time in battle with NPCs that have the desired Role. You can "link"
+		units in battle, allowing them to fight and flank more efficiently. Basically 
+		makes them target the same enemy (usually) and builds relationships.
+
+		Roles provide the afore-mentioned XP gain increase (small, but noticeable), 
+		along with Teachings, which are anything that grant a passive bonus in or out of
+		combat.
+
+		E.g. the Knight Role has the Noble Teaching, which grants +1 Muscle when linked
+		with an NPC that is Bleeding (below 50% HP)
+
+
+		Obviously this is just sketches right now, needs a lot of work. I'm skipping the player's
+		ability to grant some of their powers to their followers (since you're a Savior). that'll
+		come later.
+
+		Below are a couple sample characters that might become party members. If you can pick three,
+		I'll make their sprites and animations for battle testing first, and I'll probably bully you
+		into helping me revise their designs. You might recognize a few faces from the sandbox ;)
+
+		Name	Sex		Weapon/Trademark	Species		Role
+
+		Aarone	M		Talisman, Iron Mask Mouse		Clay Shaman
+		Kit 	F		Umbrella, 			Fox			Waif
+		Shione	F		Rod 				Mole 		Witch
+		Belth	M		Medical Kit 		Mouse 		Physician
+		Barra 	F		Flamberge 			Badger 		Beast
+		Vongar	M 		Rod 				Badger 		Ash Shaman
+		Pierre	M 		Rapier 				Hedgehog 	Duelist
+		Cor 	M 		Longsword 			Wolf 		Knight
+		Ilsa 	F 		Rifle 				Hare 		Scout/Sniper
+		Torren 	M 		Fist 				Hare 		Drunk
+		Jamon 	M 		Lash 				Mole 		Pilgrim
+		Meina 	F 		Stilleto 			Mouse 		Assassin
+
+		Or suggest another, I'm open.

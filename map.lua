@@ -26,7 +26,6 @@ local map_settings = {	90, 0, 5, 5 } --enter probabilities in order correspondin
 local TS = 32
 map.config = {}
 map.tile_images = {}
---world = require("world"):new()
 map.world = {}
 
 
@@ -103,8 +102,8 @@ function map:build_tileset_batch( display, TS )			--used to more efficiently sto
 
 	for i=-1,( display.width  ) do
 		for j=-1,( display.height ) do
-			x_map_pos = i + display.xpos
-			y_map_pos = j + display.ypos
+			x_map_pos = i + display.world_x
+			y_map_pos = j + display.world_y
 
 			if self:in_bounds( x_map_pos, y_map_pos ) then		--Check added b/c of drawing a +/-1 buffer for x and y
 				self.tileset_batch:add( self.tile_images[ self.world[ x_map_pos ][ y_map_pos ].type ], x_map_pos*TS, y_map_pos*TS )
@@ -115,34 +114,45 @@ function map:build_tileset_batch( display, TS )			--used to more efficiently sto
 end
 
 
-function map:get_tile_obj( dir, char )			--move as map.world.lua functoin?
-	if dir == 'n' then
+function map:get_tile_obj( char )			--move as map.world.lua functoin?
+	if char.ori == 'n' then
 		return self.world[ char.world_x ][ char.world_y - 1]
-	elseif dir == "s" then
+	elseif char.ori == "s" then
 		return self.world[ char.world_x ][ char.world_y + 1]
-	elseif dir == "w" then
+	elseif char.ori == "w" then
 		return self.world[ char.world_x - 1][ char.world_y ]
-	elseif dir == "e" then
+	elseif char.ori == "e" then
 		return self.world[ char.world_x + 1][ char.world_y ]
 	end
 end
 
 
-
-function map:get_tile_resident( dir, char )		--move as map.world.lua function?
-	value = self:get_tile_obj( dir, char ).holds
+function map:get_tile_resident( char )		--move as map.world.lua function?
+	value = self:get_tile_obj( char ).holds
 	return value
 end
 
+function map:get_tile( x, y ) return self.world[ x ][ y ] end
+
+function map:get_resident( x, y ) return self.world[ x ][ y ].holds end
+
+
+
+
+
+
+
+
+
+
+--================= HELPERS =============================
 
 function map:in_bounds( x, y )
 	return ( x < self.world.width_tiles and x >= 0 and y < self.world.height_tiles and y >= 0 )
 end
 
-
-
-function map:set_tile_ocpied( npc )
-	if npc then map.world[ npc.world_x ][ npc.world_y ]:set_ocpied( npc ) end
+function map:set_tile_ocpied( npc, clear )
+	if npc then map.world[ npc.world_x ][ npc.world_y ]:set_ocpied( npc, clear ) end
 end
 
 
