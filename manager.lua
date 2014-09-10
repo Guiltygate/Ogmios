@@ -30,11 +30,16 @@ function manager:remove_npc( npc ) manager.npcs[ npc.name ] = nil end
 function manager:update( dt, TS, world, time )
 
 	for i,name in ipairs( self.npcs_by_rflx ) do
-		print( name )
-		v = self.npcs[ name ];
+		v = self.npcs[ name ]
+
 		if v.roams then 
 			v:roam( world, time, dt )
 		end
+
+		if v.in_party then
+			v:follow_player( self.npcs['savior'] ) --player character
+		end
+
 		--[[
 		if v:is_injured() and not v:is_critical() then
 			v:attack_nearest_foe()
@@ -57,7 +62,12 @@ function manager:load_npcs( file, player )
 	for i,v in ipairs( load ) do
 		self:add_npc( true, v )
 	end
-	self:build_rflx( player )
+	self:add_npc( false, player )				--add player to "npc" list
+	for k,v in pairs( player.current_party ) do	--add in npcs in player's current party
+		self:add_npc( false, value )
+	end
+
+	self:build_rflx()
 	load = nil --just to ensure space is freed
 end
 
@@ -94,13 +104,8 @@ function manager:build_rflx( player ) --sets list of characters by speed ranking
 	max = find_max( self.npcs, 'stats', 'rflx' )
 	repeat
 		for k,v in pairs( self.npcs ) do	--add in npcs
+
 			if v.stats.rflx == max then table.insert( self.npcs_by_rflx, v.name ) end
-		end
-
-		if pc.stats.rflx == max then table.insert( self.npcs_by_rflx, pc.name ) end	--add in player
-
-		for k,v in pairs( pc.current_party ) do
-			if v.stats.rflx == max then table.insert( self.npcs_by_rflx, v.name ) end	--add in party members
 		end
 
 		max = max - 1

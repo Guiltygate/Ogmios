@@ -94,11 +94,9 @@ function love.update( dt )
 end
 
 function interact()						--move as player.lua function
-
 	if map:get_tile_obj( pc ):is_ocpied() then
-		display:show_text( map:get_tile_resident( pc.ori, pc ).speech )
+		display:show_text( map:get_tile_resident( pc ).speech )
 	end
-
 end
 
 

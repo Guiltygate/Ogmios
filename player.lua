@@ -29,6 +29,11 @@ player.stats={ fang=5, rflx=3, lung=2, inst=1, mind=1, snout=3, aura=1, blood=3,
 
 player.ori = 's'
 
+--=== NPC API, since the manager handles the player now =====
+player.roams = false
+player.in_party = false
+--==============================
+
 player.current_party = {}
 
 function player:new( icon, image, offset, TS )
@@ -59,8 +64,6 @@ function player:move( map, disp )
 	local build = false;	local move = false
 	local world = map.world
 	local height = world.height_tiles;	local width = world.width_tiles
-
-	print( disp:is_moving(), self:is_moving() )
 
 	if not disp:is_moving() and not self:is_moving() then
 	   if love.keyboard.isDown( 'up' ) or love.keyboard.isDown( 'w' ) then
@@ -160,25 +163,17 @@ end
 
 
 function player:add_to_party( map, display, manager )
-	local npc = map:get_tile_obj( pc )
+	local tile = map:get_tile_obj( pc )
 
-	for i,v in ipairs( player.current_party ) do	--testing only, remove
-		print( i, v.name )
-	end
-
-	if map:get_tile_obj( pc ):is_ocpied() and map:get_tile_obj( pc ):is_friendly( self ) then
+	if tile:is_ocpied() and tile:get_ocpied():is_friendly( self ) then
+		npc = tile:get_ocpied()
 		self.current_party[ npc.name ] = npc
-		manager.remove_npc( npc )
-	end
-
-	for i,v in ipairs( player.current_party ) do	--testing only, remove
-		print( i, v.name )
+		npc:enter_player_party()
 	end
 
 end
 
 function player:remove_from_party( npc, manager )
-	manager.add_npc( false, npc )
 	self.current_party[ npc.name ] = nil
 end
 

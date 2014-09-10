@@ -16,7 +16,6 @@ npc = {}
 npc.name = "None"
 npc.animations = {}
 
-npc.stats = { str=0, grc=0, awr=0, lng=0}
 npc.mood = 'agressive' --passive
 npc.faction = 'neutral'
 npc.in_combat = false
@@ -33,7 +32,7 @@ npc.counter = 0
 npc.move_slice_x = 0
 npc.move_slice_y = 0
 
-
+npc.in_party = false
 
 function npc:new( param_table, TS )
 	new_npc = param_table
@@ -103,6 +102,46 @@ function npc:update_pixel( dt, TS )
 		self.pixel_y = self.pixel_y + self.move_slice_y
 	end
 
+	self:update_current_animation()
+
+	self.animations[ self.current_anim ]:update( dt )
+
+end
+
+function npc:enter_player_party()
+	self.roams = false
+	self.in_party = true
+end
+
+function npc:follow_player( pc )
+	if math.abs( npc.world_x - pc.world_x ) > 3 then
+		follow by x?
+	elseif math.abs( npc.world_y - pc.world_y ) > 3 then
+		follow by y?
+	end
+end
+
+--[[
+function npc:attack_nearest_foe()
+	foe = map:find_nearest_foe()
+	if foe then
+		attack
+	end
+--]]
+
+
+--======================== HELPERS ==========================
+	
+function setup_animations( name, npc, TS)
+	npc.animations[ name ] = newAnimation( npc.image, TS, TS, default_anims[ name ].delay, 2, default_anims[ name ].x, default_anims[ name ].y )
+	npc.animations[ name ]:setMode( "loop" )
+end
+
+function npc:is_moving()
+	return math.abs( self.pixel_x - self.world_x*TS) > 1 or math.abs(self.pixel_y - self.world_y*TS) > 1
+end
+
+function npc:update_current_animation()
 	if self.ori == 's' then
 		if self:is_moving() then self.current_anim = 'down_move'
 		else self.current_anim = 'down_static' end
@@ -119,30 +158,8 @@ function npc:update_pixel( dt, TS )
 		if self:is_moving() then self.current_anim = 'right_move'
 		else self.current_anim = 'right_static' end
 	end
-
-	self.animations[ self.current_anim ]:update( dt )
-
 end
-
---[[
-function npc:attack_nearest_foe()
-	foe = map:find_nearest_foe()
-	if foe then
-		attack
-	end
---]]
-
-
---======================== HELPERS ==========================
-
-function setup_animations( name, npc, TS)
-	npc.animations[ name ] = newAnimation( npc.image, TS, TS, default_anims[ name ].delay, 2, default_anims[ name ].x, default_anims[ name ].y )
-	npc.animations[ name ]:setMode( "loop" )
-end
-
-function npc:is_moving()
-	return math.abs( self.pixel_x - self.world_x*TS) > 1 or math.abs(self.pixel_y - self.world_y*TS) > 1
-end
+	
 
 
 function npc:is_friendly( person ) return self.faction == person.faction end
