@@ -126,6 +126,14 @@ function map:get_tile_obj( char )			--move as map.world.lua functoin?
 	end
 end
 
+function map:get_passable( char )			--move as map.world.lua functoin?
+	return self:get_tile_obj( char ):passable()
+end
+
+function map:get_passable( x, y )
+	return self.world[ x ][ y ]:passable()
+end
+
 
 function map:get_tile_resident( char )		--move as map.world.lua function?
 	value = self:get_tile_obj( char ).holds
@@ -136,7 +144,9 @@ function map:get_tile( x, y ) return self.world[ x ][ y ] end
 
 function map:get_resident( x, y ) return self.world[ x ][ y ].holds end
 
-
+function map:get_tile_speech( player )
+	return self:get_tile_obj( player ).get_tile_speech
+end
 
 
 

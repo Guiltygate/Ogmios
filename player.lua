@@ -69,7 +69,7 @@ function player:move( map, disp )
 	   if love.keyboard.isDown( 'up' ) or love.keyboard.isDown( 'w' ) then
 		   	self.ori = 'n'												--change orientation
 
-		   	if map:get_tile_obj( self ):pass() then	--if passable, move
+		   	if map:passable( self ) then	--if passable, move
 		   		if disp.world_y > 0 and self.from_center_y == 0 then
 		   			map:set_tile_ocpied( self, true )
 		   			build = true
@@ -88,7 +88,7 @@ function player:move( map, disp )
 	   elseif love.keyboard.isDown( 'down' ) or love.keyboard.isDown( 's' ) then
 	   		self.ori = 's'
 
-	   		if map:get_tile_obj( self ):pass() then
+	   		if map:passable( self ) then
 		   		if disp.world_y < ( height - self.offset_y*2 ) and self.from_center_y == 0 then
 					map:set_tile_ocpied( self, true )
 			      	build = true
@@ -106,7 +106,7 @@ function player:move( map, disp )
 
 	   elseif love.keyboard.isDown( 'left' ) or love.keyboard.isDown( 'a' ) then
 	   		self.ori = 'w'
-	   		if map:get_tile_obj( self ):pass() then
+	   		if map:passable( self ) then
 		   		if disp.world_x > 0 and self.from_center_x == 0 then
 		   			map:set_tile_ocpied( self, true )
 		   			build = true
@@ -125,7 +125,7 @@ function player:move( map, disp )
 	   elseif love.keyboard.isDown( 'right' ) or love.keyboard.isDown( 'd' ) then
 	   		self.ori = 'e'
 
-	   		if map:get_tile_obj( self ):pass() then
+	   		if map:passable( self ) then
 		   		if disp.world_x < ( width - self.offset_x*2 ) and self.from_center_x == 0 then		      
 		   			map:set_tile_ocpied( self, true )
 			      	build = true

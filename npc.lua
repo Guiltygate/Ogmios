@@ -114,10 +114,10 @@ function npc:enter_player_party()
 end
 
 function npc:follow_player( pc )
-	if math.abs( npc.world_x - pc.world_x ) > 3 then
-		follow by x?
-	elseif math.abs( npc.world_y - pc.world_y ) > 3 then
-		follow by y?
+	if math.abs( npc.world_x - pc.world_x ) > 3 and map:get_tile_obj( self ):pass() then
+		self.world_x = self.world_x + 1
+	elseif math.abs( npc.world_y - pc.world_y ) > 3 and map:get_tile_obj( self ):pass() then
+		self.world_y = self.world_y + 1
 	end
 end
 

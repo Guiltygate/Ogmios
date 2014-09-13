@@ -5,7 +5,6 @@
 ]]
 
 local tile = {}
-tile.ocpied = false
 tile.holds = { name = "Nobody" }
 tile.passable = true
 tile.type = "nope"
@@ -29,22 +28,20 @@ end
 function tile:set_ocpied( npc, clear )
 	if clear then
 		self.holds = { name = "Nobody" }
-		self.ocpied = false
+		self.passable = true
 	else
 		self.holds = npc
-		self.ocpied = true
+		self.passable = false
 	end
 		
 end
 
 
-function tile:is_ocpied() return self.ocpied end
-
 function tile:type() return self.type end
 
-function tile:pass() return (self.passable and not self.ocpied) end
+function tile:passable() return self.passable end
 
-function tile:get_ocpied() return self.holds end
+function tile:get_resident() return self.holds end
 
 
 return tile
