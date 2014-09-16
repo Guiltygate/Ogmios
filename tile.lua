@@ -6,13 +6,14 @@
 
 local tile = {}
 tile.holds = { name = "Nobody" }
-tile.passable = true
+tile.is_passable = false
+tile.is_ocpied = false
 tile.type = "nope"
 tile.all_names = { "path", "nope", "brick", "sea"}
-tile.all_types = { path = { passable = true,	prob = 90},
-				 nope 	= { passable = false,	prob = 0},
-				 brick 	= { passable = false,	prob = 5}, 
-				 sea 	= { passable = false,	prob = 5} }
+tile.all_types = { path = { is_passable = true,	prob = 90},
+				 nope 	= { is_passable = false,	prob = 0},
+				 brick 	= { is_passable = false,	prob = 5}, 
+				 sea 	= { is_passable = false,	prob = 5} }
 
 
 function tile:new( type )
@@ -20,7 +21,8 @@ function tile:new( type )
 	setmetatable( new_tile, self )
 	self.__index = self
 	new_tile.type = type
-	new_tile.passable = self.all_types[ type ].passable
+	new_tile.is_passable = self.all_types[ type ].is_passable
+	new_tile.is_ocpied = false
 	return new_tile
 end
 
@@ -28,10 +30,10 @@ end
 function tile:set_ocpied( npc, clear )
 	if clear then
 		self.holds = { name = "Nobody" }
-		self.passable = true
+		self.is_ocpied = false
 	else
 		self.holds = npc
-		self.passable = false
+		self.is_ocpied = true
 	end
 		
 end
@@ -39,9 +41,13 @@ end
 
 function tile:type() return self.type end
 
-function tile:passable() return self.passable end
+function tile:passable() return self.is_passable and not self.is_ocpied end
+
+function tile:ocpied() return self.is_ocpied end
 
 function tile:get_resident() return self.holds end
+
+function tile:get_speech() return self.holds:get_speech() end
 
 
 return tile

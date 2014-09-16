@@ -27,17 +27,17 @@ end
 function manager:remove_npc( npc ) manager.npcs[ npc.name ] = nil end
 
 
-function manager:update( dt, TS, world, time )
+function manager:update( dt, TS, map, time )
 
 	for i,name in ipairs( self.npcs_by_rflx ) do
 		v = self.npcs[ name ]
 
 		if v.roams then 
-			v:roam( world, time, dt )
+			v:roam( map, time, dt )
 		end
 
 		if v.in_party then
-			v:follow_player( self.npcs['savior'] ) --player character
+			v:follow_player( self.npcs['savior'], map ) --player character
 		end
 
 		--[[
@@ -78,7 +78,7 @@ function manager:draw( TS, scale, display, pc, map ) --draws all characters, inc
 
 	for i=y,( y + display.height - 1 ) do
 		for j=x, ( x + display.width - 1 ) do
-			if map:get_tile( j, i ):is_ocpied() then
+			if map:get_ocpied( j, i ) then
 				map:get_resident( j, i ):draw( TS, scale, display )
 			end
 		end

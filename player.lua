@@ -66,10 +66,10 @@ function player:move( map, disp )
 	local height = world.height_tiles;	local width = world.width_tiles
 
 	if not disp:is_moving() and not self:is_moving() then
-	   if love.keyboard.isDown( 'up' ) or love.keyboard.isDown( 'w' ) then
-		   	self.ori = 'n'												--change orientation
 
-		   	if map:passable( self ) then	--if passable, move
+	   if love.keyboard.isDown( 'up' ) or love.keyboard.isDown( 'w' ) then
+		   	self.ori = 'n'											--change orientation
+		   	if map:get_passable( self ) then	--if passable, move
 		   		if disp.world_y > 0 and self.from_center_y == 0 then
 		   			map:set_tile_ocpied( self, true )
 		   			build = true
@@ -78,17 +78,12 @@ function player:move( map, disp )
 		   			map:set_tile_ocpied( self, true )
 		   			self.from_center_y = self.from_center_y - 1
 		   			move = true
-
 		   		end
-
-		   		if move or build then self.world_y = self.world_y - 1; map:set_tile_ocpied( self ) end
-
 		   	end
 
 	   elseif love.keyboard.isDown( 'down' ) or love.keyboard.isDown( 's' ) then
 	   		self.ori = 's'
-
-	   		if map:passable( self ) then
+	   		if map:get_passable( self ) then
 		   		if disp.world_y < ( height - self.offset_y*2 ) and self.from_center_y == 0 then
 					map:set_tile_ocpied( self, true )
 			      	build = true
@@ -99,14 +94,11 @@ function player:move( map, disp )
 			    	move = true
 
 			    end
-
-		   		if move or build then self.world_y = self.world_y + 1; map:set_tile_ocpied( self ) end
-
 			end
 
 	   elseif love.keyboard.isDown( 'left' ) or love.keyboard.isDown( 'a' ) then
 	   		self.ori = 'w'
-	   		if map:passable( self ) then
+	   		if map:get_passable( self ) then
 		   		if disp.world_x > 0 and self.from_center_x == 0 then
 		   			map:set_tile_ocpied( self, true )
 		   			build = true
@@ -117,15 +109,11 @@ function player:move( map, disp )
 		   			move = true
 
 		   		end
-
-		   		if move or build then self.world_x = self.world_x - 1; map:set_tile_ocpied( self ) end
-
 		   	end
 
 	   elseif love.keyboard.isDown( 'right' ) or love.keyboard.isDown( 'd' ) then
 	   		self.ori = 'e'
-
-	   		if map:passable( self ) then
+	   		if map:get_passable( self ) then
 		   		if disp.world_x < ( width - self.offset_x*2 ) and self.from_center_x == 0 then		      
 		   			map:set_tile_ocpied( self, true )
 			      	build = true
@@ -136,11 +124,15 @@ function player:move( map, disp )
 			    	move = true
 
 			    end
-
-		   		if move or build then self.world_x = self.world_x + 1; map:set_tile_ocpied( self ) end
-
 			end
 	   end
+
+		if move or build then
+			local x,y = get_tile_at_ori( self )
+			self.world_x = self.world_x + x
+			self.world_y = self.world_y + y
+			map:set_tile_ocpied( self )
+		end
 	end
 
    return build, move
@@ -163,18 +155,18 @@ end
 
 
 function player:add_to_party( map, display, manager )
-	local tile = map:get_tile_obj( pc )
-
-	if tile:is_ocpied() and tile:get_ocpied():is_friendly( self ) then
-		npc = tile:get_ocpied()
-		self.current_party[ npc.name ] = npc
-		npc:enter_player_party()
+	if map:get_ocpied( self ) then
+		local res = map:get_resident( self )
+		if res:is_friendly( self ) then
+			self.current_party[ res.name ] = res
+			res:enter_player_party()
+		end
 	end
 
 end
 
-function player:remove_from_party( npc, manager )
-	self.current_party[ npc.name ] = nil
+function player:remove_from_party( res, manager )
+	self.current_party[ res.name ] = nil
 end
 
 

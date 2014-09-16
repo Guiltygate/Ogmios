@@ -94,8 +94,8 @@ function love.update( dt )
 end
 
 function interact()						--move as player.lua function
-	if not map:get_passable( pc ) then
-		display:show_text( map:get_tile_speech( pc ) )
+	if map:get_ocpied( pc ) then
+		display:show_text( map:get_tile_text( pc ) )
 	end
 end
 
@@ -128,6 +128,18 @@ function load_images()
 	map_tileset:setFilter( "nearest" )
 	map.tileset_batch = love.graphics.newSpriteBatch( map_tileset, (display.height + 2) * (display.width + 2) )
 
+end
+
+function get_tile_at_ori( char )
+	if char.ori == 'n' then
+		return 0, -1
+	elseif char.ori == 's' then
+		return 0, 1
+	elseif char.ori == 'e' then
+		return 1, 0
+	elseif char.ori == 'w' then
+		return -1, 0
+	end
 end
 
 

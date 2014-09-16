@@ -27,7 +27,7 @@ npc.roams = false
 npc.current_anim = 'down_static'
 npc.ori = 's'
 
-npc.dt = (math.random() * 3) + 1
+npc.dt = 1 --(math.random() * 4) + 1
 npc.counter = 0
 npc.move_slice_x = 0
 npc.move_slice_y = 0
@@ -59,7 +59,7 @@ function npc:draw( TS, scale, display )
 							 (self.pixel_y - display.pixel_y - (TS/2))*scale, 0, scale, scale )
 end
 
-function npc:roam( world, time, dt )
+function npc:roam( map, time, dt )
 	--need to update world tile location, clear last tile, mark new tile
 	--need to set world_x and world_y
 
@@ -69,29 +69,37 @@ function npc:roam( world, time, dt )
 	if chance < 92 then 
 		return
 	elseif self.counter > self.dt then
-			map:set_tile_ocpied( self, true )		--clear current tile of occupation status
-		if chance < 94 and self.world_y > 0 and map:get_tile_obj( self ):pass() then
-			self.world_y = self.world_y - 1;
+		if chance < 94 then
 			self.ori = 'n'
-		elseif chance < 96 and self.world_y < map.world.height_tiles and map:get_tile_obj( self ):pass() then
-			self.world_y = self.world_y + 1
+		elseif chance < 96 then
 			self.ori = 's'
-		elseif chance < 98 and self.world_x > 0 and map:get_tile_obj( self ):pass() then
-			self.world_x = self.world_x - 1
+		elseif chance < 98 then
 			self.ori = 'w'
-		elseif chance < 100 and self.world_x < map.world.width_tiles and map:get_tile_obj( self ):pass() then
-			self.world_x = self.world_x + 1
+		elseif chance < 100 then
 			self.ori = 'e'
 		end
-		map:set_tile_ocpied( self )				--set new (or possibly old) tile as occupied
-
-		self.move_slice_x = self.world_x  - self.pixel_x/32
-		self.move_slice_y = self.world_y  - self.pixel_y/32
+		self:move( map )
 
 		self.counter = 0
 
 	end
 
+end
+
+
+function npc:move( map )
+	if map:get_passable( self ) and map:in_bounds( self ) and not self:is_moving() then 
+		map:set_tile_ocpied( self, true )
+
+		x,y = get_tile_at_ori( self )
+		self.world_y = self.world_y + y
+		self.world_x = self.world_x + x
+
+		self.move_slice_x = self.world_x  - self.pixel_x/32
+		self.move_slice_y = self.world_y  - self.pixel_y/32		
+
+		map:set_tile_ocpied( self )
+	end
 end
 
 
@@ -113,21 +121,28 @@ function npc:enter_player_party()
 	self.in_party = true
 end
 
-function npc:follow_player( pc )
-	if math.abs( npc.world_x - pc.world_x ) > 3 and map:get_tile_obj( self ):pass() then
-		self.world_x = self.world_x + 1
-	elseif math.abs( npc.world_y - pc.world_y ) > 3 and map:get_tile_obj( self ):pass() then
-		self.world_y = self.world_y + 1
+function npc:follow_player( pc, map )
+	local dx = pc.world_x - self.world_x; local dy = pc.world_y - self.world_y
+	local abs_x = math.abs( dx ); local abs_y = math.abs( dy )
+	local moving = false
+
+	print( dx, dy )
+
+	if abs_x >= 3 and abs_x > abs_y then
+		if dx > 0 then self.ori = 'e'
+		elseif dx < 0 then self.ori = 'w' end
+
+		self:move( map )
+
+	elseif abs_y >= 3 and not self:is_moving() then
+		if dy > 0 then self.ori = 's'
+		elseif dy < 0 then self.ori = 'n' end
+
+		self:move( map )
 	end
+
 end
 
---[[
-function npc:attack_nearest_foe()
-	foe = map:find_nearest_foe()
-	if foe then
-		attack
-	end
---]]
 
 
 --======================== HELPERS ==========================
@@ -143,21 +158,21 @@ end
 
 function npc:update_current_animation()
 	if self.ori == 's' then
-		if self:is_moving() then self.current_anim = 'down_move'
-		else self.current_anim = 'down_static' end
+		new_anim = { 'down_move', 'down_static' }
 
 	elseif self.ori == 'n' then
-		if self:is_moving() then self.current_anim = 'up_move'
-		else self.current_anim = 'up_static' end
+		new_anim = { 'up_move' , 'up_static' }
 
 	elseif self.ori == 'w' then
-		if self:is_moving() then self.current_anim = 'left_move'
-		else self.current_anim = 'left_static' end
+		new_anim = { 'left_move' , 'left_static' }
 
 	elseif self.ori == 'e' then
-		if self:is_moving() then self.current_anim = 'right_move'
-		else self.current_anim = 'right_static' end
+		new_anim = { 'right_move' , 'right_static' }
 	end
+
+	if self:is_moving() then self.current_anim = new_anim[ 1 ]
+		else self.current_anim = new_anim[ 2 ] end
+
 end
 	
 
@@ -166,7 +181,8 @@ function npc:is_friendly( person ) return self.faction == person.faction end
 function npc:is_neutral( person ) return self.faction == 'neutral' end
 function npc:is_foe( person ) return ( not self:is_friendly( person ) and not self:is_neutral( person ) ) end
 function npc:is_injured() return ( self.stats.hp < self.stats.lung*self.stats.blood ) end
-function npc:is_critical() return ( self.stats.hp < (self.stats.lung*self.stats.str)/4 ) end	
+function npc:is_critical() return ( self.stats.hp < (self.stats.lung*self.stats.str)/4 ) end
+function npc:get_speech() return self.speech end	
 
 
  return npc

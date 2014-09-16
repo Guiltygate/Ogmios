@@ -114,41 +114,45 @@ function map:build_tileset_batch( display, TS )			--used to more efficiently sto
 end
 
 
-function map:get_tile_obj( char )			--move as map.world.lua functoin?
-	if char.ori == 'n' then
-		return self.world[ char.world_x ][ char.world_y - 1]
-	elseif char.ori == "s" then
-		return self.world[ char.world_x ][ char.world_y + 1]
-	elseif char.ori == "w" then
-		return self.world[ char.world_x - 1][ char.world_y ]
-	elseif char.ori == "e" then
-		return self.world[ char.world_x + 1][ char.world_y ]
+
+function map:get_tile( char , y )
+	if not y then
+		--print( char.ori )
+		x,y = get_tile_at_ori( char )
+		return self.world[ char.world_x + x ][ char.world_y + y ]
+	else
+		return self.world[ char ][ y ]
 	end
 end
 
-function map:get_passable( char )			--move as map.world.lua functoin?
-	return self:get_tile_obj( char ):passable()
-end
 
-function map:get_passable( x, y )
-	return self.world[ x ][ y ]:passable()
-end
-
-
-function map:get_tile_resident( char )		--move as map.world.lua function?
-	value = self:get_tile_obj( char ).holds
-	return value
-end
-
-function map:get_tile( x, y ) return self.world[ x ][ y ] end
-
-function map:get_resident( x, y ) return self.world[ x ][ y ].holds end
-
-function map:get_tile_speech( player )
-	return self:get_tile_obj( player ).get_tile_speech
+function map:get_passable( char , y )			--move as map.world.lua functoin?
+	if not y then return self:get_tile( char ):passable()
+	else return self:get_tile( char , y ):passable()
+	end
 end
 
 
+
+function map:get_resident( char , y )		--move as map.world.lua function?
+	if not y then return self:get_tile( char ):get_resident()
+	else return self:get_tile( char , y ):get_resident() 
+	end
+end
+
+
+
+function map:get_tile_text( player )
+	return self:get_tile( player ):get_speech()
+end
+
+
+
+function map:get_ocpied( char, y )
+	if not y then return self:get_tile( char ):ocpied()
+	else return self:get_tile( char, y ):ocpied()
+	end
+end
 
 
 
@@ -157,12 +161,19 @@ end
 
 --================= HELPERS =============================
 
-function map:in_bounds( x, y )
-	return ( x < self.world.width_tiles and x >= 0 and y < self.world.height_tiles and y >= 0 )
+function map:in_bounds( char, y )
+	if not y then
+		nx , ny = get_tile_at_ori( char )
+		dx = char.world_x + nx; dy = char.world_y + ny;
+		return ( dx < self.world.width_tiles and dx >= 0 and dy < self.world.height_tiles and dy >= 0 )
+	else
+		local x = char
+		return ( x < self.world.width_tiles and x >= 0 and y < self.world.height_tiles and y >= 0 )
+	end
 end
 
-function map:set_tile_ocpied( npc, clear )
-	if npc then map.world[ npc.world_x ][ npc.world_y ]:set_ocpied( npc, clear ) end
+function map:set_tile_ocpied( npc , clear )
+	if npc then map:get_tile( npc.world_x , npc.world_y ):set_ocpied( npc, clear ) end
 end
 
 
