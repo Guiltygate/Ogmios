@@ -36,24 +36,32 @@ function disp:draw_text()
 	self.text:draw()
 end
 
-function disp:update_pixel( dt, TS, speed, pc)
-
-
+function disp:update_pixel( dt, TS, pc)
+	local move_slice = math.ceil( dt * 100 )
 	self.world_x = pc.world_x - pc.from_center_x - pc.offset_x
 	self.world_y = pc.world_y - pc.from_center_y - pc.offset_y
-	
-	if self:started_moving() then
-		self.move_slice_x = self.world_x - self.pixel_x/32
-		self.move_slice_y = self.world_y - self.pixel_y/32
+
+	if self:get_displacement( 'x' ) < 0 or self:get_displacement( 'y' ) < 0 then	--set direction
+		move_slice = move_slice * -1
 	end
 
 
-	if self:is_moving() then
-		self.pixel_x = self.pixel_x + self.move_slice_x
-		self.pixel_y = self.pixel_y + self.move_slice_y
+	if self:is_moving_x() then 
+		if math.abs( self:get_displacement('x')) < move_slice then
+			move_slice = self:get_displacement( 'x' ); print( "x displacement" )
+		end
+		self.pixel_x = self.pixel_x + move_slice
 	end
 
+	if self:is_moving_y() then 
+		if math.abs( self:get_displacement('y')) < move_slice then
+			move_slice = self:get_displacement( 'y' ); print( "y displacement" )
+		end
+		self.pixel_y = self.pixel_y + move_slice
+	end
 end
+
+
 
 function disp:draw( TS, tileset_batch, scale )
 	love.graphics.draw( tileset_batch, -self.pixel_x*scale, -self.pixel_y*scale , 0, scale, scale )			--Now with SpriteBatch, this draws the entire world!
@@ -65,13 +73,15 @@ end
 
 --===================== HELPERS =================================
 
-function disp:is_moving()
-	return math.abs( self.pixel_x - self.world_x*TS) > 1 or math.abs(self.pixel_y - self.world_y*TS) > 1
+function disp:is_moving_x() return self.pixel_x  ~= self.world_x*TS end
+function disp:is_moving_y() return self.pixel_y ~= self.world_y*TS end
+function disp:is_moving() return self:is_moving_y() or self:is_moving_x() end
+
+function disp:get_displacement( char )	--returns positive for +xy
+	if char == 'x' then return (self.world_x*TS) - self.pixel_x
+	elseif char == 'y' then return ( self.world_y*TS ) - self.pixel_y end
 end
 
-function disp:started_moving()
-	return math.abs( self.pixel_x - self.world_x*TS) > 31 or math.abs(self.pixel_y - self.world_y*TS) > 31
-end
 --=================================================================
 
 

@@ -1,6 +1,6 @@
 Control document for Project Ogmios
 Author: Eric Ames
-Last Update: July 25th, 2014
+Last Update: September 20th, 2014
 
 Overall, wanted to try and have simple/fun gameplay along with heavily focusing on choices,
 especially the choices of who lives/dies under your "command".
@@ -45,7 +45,10 @@ Timeline:
 	Temp MS: Refactor map/world storage and gen to be seperate Object. Add images folder, global path extension. Add load_images() to
 			main.lua. General refactoring- better now than later!
 
-	2) Figure out unit stats, creation-wise. Have a couple placeholders, and move on to
+	2) Figure out unit stats, creation-wise. Have a couple placeholders, and move on.
+		-Currently working on. Rough ruleset is in place, need some basic animations for attacking/bleeding,
+		along with blah system to tell damage being dealt, and perhaps direct team members.
+		-Also improve ally "pathfinding".
 
 	3) Player interaction, so assigning units to areas, and having them come back at the end of the conflict.
 

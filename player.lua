@@ -52,7 +52,11 @@ function player:new( icon, image, offset, TS )
 	return new_player
 end
 
-
+function player:update_self( dt, TS, map, disp )
+	local build, move = self:move( map, disp )
+	self:update_pixel( dt, TS )
+	return build, move
+end
 
 function player:draw( TS, scale )
 	love.graphics.draw( self.image, self.icon, (( self.offset_x * TS ) + self.pixel_x ) * scale, (( self.offset_y * TS ) + self.pixel_y - (TS / 2) ) * scale, 0, scale, scale )
@@ -69,7 +73,7 @@ function player:move( map, disp )
 
 	   if love.keyboard.isDown( 'up' ) or love.keyboard.isDown( 'w' ) then
 		   	self.ori = 'n'											--change orientation
-		   	if map:get_passable( self ) then	--if passable, move
+		   	if map:get_passable( self ) then	--or get_ocpied
 		   		if disp.world_y > 0 and self.from_center_y == 0 then
 		   			map:set_tile_ocpied( self, true )
 		   			build = true
@@ -133,25 +137,35 @@ function player:move( map, disp )
 			self.world_y = self.world_y + y
 			map:set_tile_ocpied( self )
 		end
-	end
+	end 
 
    return build, move
 end
 
 
 function player:update_pixel( dt, TS )
+	local move_slice = math.ceil( dt * 100 )
 
-	if self:started_moving() then
-		self.move_slice_x = self.from_center_x - self.pixel_x/32
-		self.move_slice_y = self.from_center_y - self.pixel_y/32
+	if self:get_displacement( 'x' ) < 0 or self:get_displacement( 'y' ) < 0 then	--set direction
+		move_slice = move_slice * -1
 	end
 
-	if self:is_moving() then
-		self.pixel_x = self.pixel_x + self.move_slice_x
-		self.pixel_y = self.pixel_y + self.move_slice_y
+	if self:is_moving_x() then 
+		if math.abs( self:get_displacement('x')) < move_slice then
+			move_slice = self:get_displacement( 'x' ); print( "x displacement" )
+		end
+		self.pixel_x = self.pixel_x + move_slice
+	end
+
+	if self:is_moving_y() then 
+		if math.abs( self:get_displacement('y')) < move_slice then
+			move_slice = self:get_displacement( 'y' ); print( "y displacement" )
+		end
+		self.pixel_y = self.pixel_y + move_slice
 	end
 
 end
+
 
 
 function player:add_to_party( map, display, manager )
@@ -164,6 +178,7 @@ function player:add_to_party( map, display, manager )
 	end
 
 end
+
 
 function player:remove_from_party( res, manager )
 	self.current_party[ res.name ] = nil
@@ -181,17 +196,20 @@ end
 
 --=============== HELPERS =========================
 
-function player:is_moving()
-	return math.abs( self.pixel_x  - self.from_center_x*TS ) > 1 or math.abs( self.pixel_y - self.from_center_y*TS ) > 1
-end
+function player:is_moving_x() return self.pixel_x  ~= self.from_center_x*TS end
+function player:is_moving_y() return self.pixel_y ~= self.from_center_y*TS end
+function player:is_moving() return self:is_moving_y() or self:is_moving_x() end
 
-function player:started_moving()
-	return math.abs( self.pixel_x - self.from_center_x*TS) > 31 or math.abs(self.pixel_y - self.from_center_y*TS) > 31
+function player:get_displacement( char )	--returns positive for +xy
+	if char == 'x' then return (self.from_center_x*TS) - self.pixel_x
+	elseif char == 'y' then return ( self.from_center_y*TS ) - self.pixel_y end
 end
 
 function player:attacking( set )
 	player.is_attacking = ( set or false )
 end
 --==================================================
+
+
 
 return player

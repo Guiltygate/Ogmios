@@ -8,7 +8,7 @@ function love.conf(t)			--General love settings. Look up this when in doubt.
     t.window.height = 1056
     t.window.fullscreen = false
     t.window.vsync = true
-    t.window.title = "Ogmios 0.0.04"
+    t.window.title = "Ogmios 0.1.00"
 
     t.window.fsaa = 0
 

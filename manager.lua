@@ -27,33 +27,16 @@ end
 function manager:remove_npc( npc ) manager.npcs[ npc.name ] = nil end
 
 
-function manager:update( dt, TS, map, time )
+function manager:update( dt, TS, map, disp )
+	local build, move, tmp1, tmp2
 
 	for i,name in ipairs( self.npcs_by_rflx ) do
 		v = self.npcs[ name ]
-
-		if v.roams then 
-			v:roam( map, time, dt )
-		end
-
-		if v.in_party then
-			v:follow_player( self.npcs['savior'], map ) --player character
-		end
-
-		--[[
-		if v:is_injured() and not v:is_critical() then
-			v:attack_nearest_foe()
-		end
-
-		if v:is_critical() then
-			--v:flee()
-			print("Fleeing test.")
-		end--]]
-
-		v:update_pixel( dt, TS )
-
+		tmp1, tmp2 = v:update_self( dt, TS, map, disp, self.npcs.savior )
+		if tmp1 then build = tmp1 end; if tmp2 then move = tmp2 end;
 	end
 	
+	return build, move
 end
 
 
@@ -75,9 +58,12 @@ end
 function manager:draw( TS, scale, display, pc, map ) --draws all characters, including player
 	local x = display.world_x;	local y = display.world_y
 
+	if y > 0 then y = y - 1 end
+	if x > 0 then x = x - 1 end
 
-	for i=y,( y + display.height - 1 ) do
-		for j=x, ( x + display.width - 1 ) do
+
+	for i=y,( y + display.height + 2 ) do
+		for j=x, ( x + display.width + 1 ) do
 			if map:get_ocpied( j, i ) then
 				map:get_resident( j, i ):draw( TS, scale, display )
 			end

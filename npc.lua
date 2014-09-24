@@ -15,11 +15,6 @@ default_anims = {
 npc = {}
 npc.name = "None"
 npc.animations = {}
-
-npc.mood = 'agressive' --passive
-npc.faction = 'neutral'
-npc.in_combat = false
-
 npc.world_x = 0; npc.world_y = 0
 npc.pixel_x = 0; npc.pixel_y = 0
 
@@ -32,7 +27,12 @@ npc.counter = 0
 npc.move_slice_x = 0
 npc.move_slice_y = 0
 
+npc.catch_up = false
+npc.in_battle = false
 npc.in_party = false
+npc.mood = 'agressive' --passive
+npc.faction = 'neutral'
+
 
 function npc:new( param_table, TS )
 	new_npc = param_table
@@ -59,9 +59,30 @@ function npc:draw( TS, scale, display )
 							 (self.pixel_y - display.pixel_y - (TS/2))*scale, 0, scale, scale )
 end
 
-function npc:roam( map, time, dt )
-	--need to update world tile location, clear last tile, mark new tile
-	--need to set world_x and world_y
+function npc:update_self( dt, TS, map, disp, pc )
+
+	--if not self:pushed() then
+		self:roam( map, dt)
+		self:follow_char( pc, map )
+	--end
+
+	self:update_pixel( dt, TS )
+
+		--[[
+		if v:is_injured() and not v:is_critical() then
+			v:attack_nearest_foe()
+		end
+
+		if v:is_critical() then
+			--v:flee()
+			print("Fleeing test.")
+		end--]]
+
+end
+
+
+function npc:roam( map, dt )
+	if not self.roams then return end
 
 	chance = math.random() * 100
 	self.counter = self.counter + dt
@@ -120,26 +141,45 @@ function npc:enter_player_party()
 	self.roams = false
 	self.in_party = true
 end
+--[[
+function npc:pushed()
+	npc:
 
-function npc:follow_player( pc, map )
-	local dx = pc.world_x - self.world_x; local dy = pc.world_y - self.world_y
-	local abs_x = math.abs( dx ); local abs_y = math.abs( dy )
-	local moving = false
 
-	print( dx, dy )
+function npc:blurb()
 
-	if abs_x >= 3 and abs_x > abs_y then
-		if dx > 0 then self.ori = 'e'
-		elseif dx < 0 then self.ori = 'w' end
+--]]
 
-		self:move( map )
+function npc:follow_char( char, map )
+	if not self.in_party or self.in_battle then return end
 
-	elseif abs_y >= 3 and not self:is_moving() then
-		if dy > 0 then self.ori = 's'
-		elseif dy < 0 then self.ori = 'n' end
+	dx,dy = self:dist_to_char( char )
+	abs_dx,abs_dy = self:dist_to_char( char, true )
 
-		self:move( map )
+	if not self:is_moving() then
+		if (abs_dx >= 3 or self.catch_up) and abs_dx >= abs_dy then
+			self.catch_up = true
+			if dx > 0 then self.ori = 'e'
+			elseif dx < 0 then self.ori = 'w' end
+
+			self:move( map )
+			if not self:is_moving() then self.ori = 's'; self:move( map );
+				if not self:is_moving() then self.ori = 'n'; self:move( map );
+			end end
+
+		elseif (abs_dy >= 3 or self.catch_up) then
+			self.catch_up = true
+			if dy > 0 then self.ori = 's'
+			elseif dy < 0 then self.ori = 'n' end
+
+			self:move( map )
+			if not self:is_moving() then self.ori = 'e'; self:move( map );
+				if not self:is_moving() then self.ori = 'w'; self:move( map );
+			end end
+		end
 	end
+
+	if self:dist_to_char_x( char, true ) <= 2 and self:dist_to_char_y( char, true ) <= 2 then self.catch_up = false end
 
 end
 
@@ -182,7 +222,15 @@ function npc:is_neutral( person ) return self.faction == 'neutral' end
 function npc:is_foe( person ) return ( not self:is_friendly( person ) and not self:is_neutral( person ) ) end
 function npc:is_injured() return ( self.stats.hp < self.stats.lung*self.stats.blood ) end
 function npc:is_critical() return ( self.stats.hp < (self.stats.lung*self.stats.str)/4 ) end
-function npc:get_speech() return self.speech end	
-
+function npc:get_speech() return self.speech end
+--[
+function npc:dist_to_char_x( char, abs ) 
+	if not abs then return char.world_x - self.world_x
+	else return math.abs( char.world_x - self.world_x ) end end
+function npc:dist_to_char_y( char, abs ) 
+	if not abs then return char.world_y - self.world_y
+	else return math.abs( char.world_y - self.world_y ) end end
+function npc:dist_to_char( char, abs ) return self:dist_to_char_x( char, abs ), self:dist_to_char_y( char, abs ) end
+--]]
 
  return npc
