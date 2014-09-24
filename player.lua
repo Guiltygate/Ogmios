@@ -17,9 +17,6 @@ player.in_combat = false
 player.image = ""
 player.icon = ""
 
-player.move_slice_x = 0
-player.move_slice_y = 0
-
 player.offset_x = 0
 player.offset_y = 0
 
@@ -28,6 +25,7 @@ player.name = 'savior'
 player.stats={ fang=5, rflx=3, lung=2, inst=1, mind=1, snout=3, aura=1, blood=3, fur=1, paw=1 }
 
 player.ori = 's'
+player.given_move_comm = false
 
 --=== NPC API, since the manager handles the player now =====
 player.roams = false
@@ -66,14 +64,40 @@ end
 
 function player:move( map, disp )
 	local build = false;	local move = false
-	local world = map.world
-	local height = world.height_tiles;	local width = world.width_tiles
 
 	if not disp:is_moving() and not self:is_moving() then
 
+		if love.keyboard.isDown( 'up' ) or love.keyboard.isDown( 'w' ) then
+			self.ori = 'n'; self.given_move_comm = true;
+		elseif love.keyboard.isDown( 'down' ) or love.keyboard.isDown( 's' ) then
+			self.ori = 's';  self.given_move_comm = true;
+		elseif love.keyboard.isDown( 'right' ) or love.keyboard.isDown( 'd' ) then
+			self.ori = 'e';  self.given_move_comm = true;
+		elseif love.keyboard.isDown( 'left' ) or love.keyboard.isDown( 'a' ) then
+			self.ori = 'w';  self.given_move_comm = true;
+		end
+
+		local npc = map:get_resident( self )
+
+		if (map:get_passable( self ) or npc) and self.given_move_comm then
+
+			--if npc then stuff end	--stub, finish
+
+			if self:disp_should_move( disp, map.world, self.ori ) then
+				map:set_tile_ocpied( self, true )
+				build = true
+			elseif self:player_should_move() then
+				map:set_tile_ocpied( self, true )
+				x,y = get_tile_at_ori( self )
+				self.from_center_y = self.from_center_y + y
+				self.from_center_x = self.from_center_x + x
+				move = true
+			end
+		end
+--[[
 	   if love.keyboard.isDown( 'up' ) or love.keyboard.isDown( 'w' ) then
 		   	self.ori = 'n'											--change orientation
-		   	if map:get_passable( self ) then	--or get_ocpied
+		   	if map:get_passable( self ) then
 		   		if disp.world_y > 0 and self.from_center_y == 0 then
 		   			map:set_tile_ocpied( self, true )
 		   			build = true
@@ -130,6 +154,7 @@ function player:move( map, disp )
 			    end
 			end
 	   end
+--]]	self.given_move_comm = false
 
 		if move or build then
 			local x,y = get_tile_at_ori( self )
@@ -207,6 +232,25 @@ end
 
 function player:attacking( set )
 	player.is_attacking = ( set or false )
+end
+
+function player:disp_should_move( disp, world, ori )
+	if ori == 'n' then
+		return disp.world_y > 0 and self.from_center_y == 0
+	elseif ori == 's' then
+		return disp.world_y < (world.height_tiles - (self.offset_y*2)) and self.from_center_y == 0
+	elseif ori == 'w' then
+		return disp.world_x > 0 and self.from_center_x == 0
+	elseif ori == 'e' then
+		return disp.world_x < (world.width_tiles - (self.offset_x*2)) and self.from_center_x == 0 
+	end
+end
+
+function player:player_should_move()
+	if self.ori == 'n' or self.ori == 's' then
+		return self.from_center_y > -self.offset_y and self.from_center_y < self.offset_y - 1
+	elseif self.ori == 'e' or self.ori == 'w' then
+		return self.from_center_x > -self.offset_x and self.from_center_x < self.offset_x - 1 end
 end
 --==================================================
 

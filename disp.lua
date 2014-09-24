@@ -9,8 +9,6 @@ package.path = "Ogmios/sub_objects/?.lua"
 
 disp = {}
 msg_box = require( "msg_box" )
-disp.move_slice_x = 0
-disp.move_slice_y = 0
 
 
 function disp:new( height, width, window_height, window_width )

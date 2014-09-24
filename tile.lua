@@ -5,7 +5,7 @@
 ]]
 
 local tile = {}
-tile.holds = { name = "Nobody" }
+tile.holds = nil
 tile.is_passable = false
 tile.is_ocpied = false
 tile.type = "nope"

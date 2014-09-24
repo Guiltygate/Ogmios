@@ -63,7 +63,9 @@ function manager:draw( TS, scale, display, pc, map ) --draws all characters, inc
 
 
 	for i=y,( y + display.height + 2 ) do
+		if i >= map.world.height_tiles then y = map.world.height_tiles - 1 end	--to keep from looking for npcs beyond the edge
 		for j=x, ( x + display.width + 1 ) do
+			if j >= map.world.width_tiles then y = map.world.width_tiles - 1 end
 			if map:get_ocpied( j, i ) then
 				map:get_resident( j, i ):draw( TS, scale, display )
 			end

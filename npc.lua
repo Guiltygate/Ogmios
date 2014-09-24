@@ -141,6 +141,7 @@ function npc:enter_player_party()
 	self.roams = false
 	self.in_party = true
 end
+
 --[[
 function npc:pushed()
 	npc:
