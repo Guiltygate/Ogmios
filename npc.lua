@@ -57,14 +57,13 @@ end
 function npc:draw( TS, scale, display )
 	self.animations[ self.current_anim ]:draw( (self.pixel_x - display.pixel_x)*scale,
 							 (self.pixel_y - display.pixel_y - (TS/2))*scale, 0, scale, scale )
+	self:blurb( display, scale )
 end
 
 function npc:update_self( dt, TS, map, disp, pc )
 
-	--if not self:pushed() then
-		self:roam( map, dt)
-		self:follow_char( pc, map )
-	--end
+	self:roam( map, dt)
+	self:follow_char( pc, map )
 
 	self:update_pixel( dt, TS )
 
@@ -116,23 +115,34 @@ function npc:move( map )
 		self.world_y = self.world_y + y
 		self.world_x = self.world_x + x
 
-		self.move_slice_x = self.world_x  - self.pixel_x/32
-		self.move_slice_y = self.world_y  - self.pixel_y/32		
-
 		map:set_tile_ocpied( self )
 	end
 end
 
 
 function npc:update_pixel( dt, TS )
+	local move_slice = math.ceil( dt * 100 )
 
-	if self:is_moving() then
-		self.pixel_x = self.pixel_x + self.move_slice_x
-		self.pixel_y = self.pixel_y + self.move_slice_y
+	if self:get_displacement( 'x' ) < 0 or self:get_displacement( 'y' ) < 0 then	--set direction
+		move_slice = move_slice * -1
 	end
 
-	self:update_current_animation()
 
+	if self:is_moving_x() then 
+		if math.abs( self:get_displacement('x')) < move_slice then
+			move_slice = self:get_displacement( 'x' ); print( "x displacement" )
+		end
+		self.pixel_x = self.pixel_x + move_slice end
+	if self:is_moving_y() then 
+		if math.abs( self:get_displacement('y')) < move_slice then
+			move_slice = self:get_displacement( 'y' ); print( "y displacement" )
+		end
+		self.pixel_y = self.pixel_y + move_slice end
+
+
+	if not self:is_moving() and self.was_pushed then self.was_pushed = false end
+
+	self:update_current_animation()
 	self.animations[ self.current_anim ]:update( dt )
 
 end
@@ -142,14 +152,27 @@ function npc:enter_player_party()
 	self.in_party = true
 end
 
---[[
-function npc:pushed()
-	npc:
 
 
-function npc:blurb()
+function npc:pushed( ori, map )
+	self.was_pushed = true
+	if ori == 'e' then self.ori = 'n'
+	elseif ori == 'n' then self.ori = 'w'
+	elseif ori == 'w' then self.ori = 's'
+	elseif ori == 's' then self.ori = 'e' end
+	self:move( map )
+	if self:is_moving() then return true
+	else self.was_pushed = false; return false end
+end
 
---]]
+
+
+function npc:blurb( display, scale )
+	if self.was_pushed then
+	love.graphics.print( "Argh!", (self.pixel_x - display.pixel_x)*scale, (self.pixel_y - display.pixel_y - 16)*scale )
+	end
+end
+
 
 function npc:follow_char( char, map )
 	if not self.in_party or self.in_battle then return end
@@ -193,10 +216,6 @@ function setup_animations( name, npc, TS)
 	npc.animations[ name ]:setMode( "loop" )
 end
 
-function npc:is_moving()
-	return math.abs( self.pixel_x - self.world_x*TS) > 1 or math.abs(self.pixel_y - self.world_y*TS) > 1
-end
-
 function npc:update_current_animation()
 	if self.ori == 's' then
 		new_anim = { 'down_move', 'down_static' }
@@ -216,7 +235,14 @@ function npc:update_current_animation()
 
 end
 	
+function npc:is_moving_x() return self.pixel_x  ~= self.world_x*TS end
+function npc:is_moving_y() return self.pixel_y ~= self.world_y*TS end
+function npc:is_moving() return self:is_moving_y() or self:is_moving_x() end
 
+function npc:get_displacement( char )	--returns positive for +xy
+	if char == 'x' then return (self.world_x*TS) - self.pixel_x
+	elseif char == 'y' then return ( self.world_y*TS ) - self.pixel_y end
+end
 
 function npc:is_friendly( person ) return self.faction == person.faction end
 function npc:is_neutral( person ) return self.faction == 'neutral' end
@@ -224,7 +250,8 @@ function npc:is_foe( person ) return ( not self:is_friendly( person ) and not se
 function npc:is_injured() return ( self.stats.hp < self.stats.lung*self.stats.blood ) end
 function npc:is_critical() return ( self.stats.hp < (self.stats.lung*self.stats.str)/4 ) end
 function npc:get_speech() return self.speech end
---[
+
+
 function npc:dist_to_char_x( char, abs ) 
 	if not abs then return char.world_x - self.world_x
 	else return math.abs( char.world_x - self.world_x ) end end
@@ -232,6 +259,8 @@ function npc:dist_to_char_y( char, abs )
 	if not abs then return char.world_y - self.world_y
 	else return math.abs( char.world_y - self.world_y ) end end
 function npc:dist_to_char( char, abs ) return self:dist_to_char_x( char, abs ), self:dist_to_char_y( char, abs ) end
---]]
+
+
+
 
  return npc

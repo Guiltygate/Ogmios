@@ -24,6 +24,8 @@ local build = false
 local disp_height = 11; local disp_width = 19;
 local img_dir = "images/"
 local start_coord = {x=10, y=6}
+local fog_image
+local direction_keys = { w=true, s=true, n=true, s=true, up=true, down=true, left=true, right=true }
 
 --======================================
 
@@ -34,6 +36,7 @@ function love.load()							--initial values and files to load for gameplay
 	love.graphics.setNewFont( 25 )
 
 	scale = window_height / ( display.height * TS )
+	love.keyboard.setKeyRepeat( true )
 
 	math.randomseed( os.time() )				--set random seed value for map generation
 
@@ -46,9 +49,6 @@ function love.load()							--initial values and files to load for gameplay
 	map:create_world( chosen_world_width, chosen_world_height )
 	map:build_tileset_batch( display, TS )
 	manager:load_npcs( "std_npc_load", pc )
-
-
-
 end
 
 
@@ -58,12 +58,15 @@ function love.draw()
 	--display:draw_high_layer()			--add later, for passable tiles that are "sticking up", must be drawn over characters; e.g. walls, fog, etc.
 	display:draw_text()								--and finally draw the message window
 
+	love.graphics.draw( fog_image, 5*TS, 5*TS )
+
 	debug()
 
 end
 
 
 function love.keypressed(key, isrepeat)
+	if direction_keys[ key ] == true then pc:trigger_move( key ) end
 	if key == "e" then interact() end	--move interact as player.lua function
 	if key == 'f' then pc:attacking( true ) end
 	if key == 'v' then pc:add_to_party( map, display, manager ) end
@@ -115,6 +118,11 @@ function load_images()
 	local offset = { x = ((display.width/2)+0.5), y = ((display.height/2)+0.5) }
 	pc = player:new( pc_icon, pc_image, offset, TS )
 
+	--FOG TEST--
+	fog_image = love.graphics.newImage( img_dir.."bad_fog_2.png" )
+	fog_image:setFilter( "nearest" )	
+	---
+
 	map_tileset = love.graphics.newImage( img_dir.."map_tile_placeholders2.png" )
 	map_tileset:setFilter( "nearest" )
 	map.tileset_batch = love.graphics.newSpriteBatch( map_tileset, (display.height + 2) * (display.width + 2) )
@@ -138,5 +146,5 @@ function debug()
 	love.graphics.print("FPS: "..love.timer.getFPS(), 10, 20)
   	love.graphics.print("Pos: "..display.world_x.." "..display.world_y, 10, 40)
   	love.graphics.print("Self Pos: "..pc.from_center_x.." "..pc.from_center_y, 10, 60)
-  	love.graphics.print("Self World: "..pc.world_x.." "..pc.world_y, 10, 80)
+ 	love.graphics.print("Self World: "..pc.world_x.." "..pc.world_y, 10, 80)
 end

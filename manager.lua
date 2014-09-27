@@ -33,7 +33,7 @@ function manager:update( dt, TS, map, disp )
 	for i,name in ipairs( self.npcs_by_rflx ) do
 		v = self.npcs[ name ]
 		tmp1, tmp2 = v:update_self( dt, TS, map, disp, self.npcs.savior )
-		if tmp1 then build = tmp1 end; if tmp2 then move = tmp2 end;
+		if tmp1 then build = tmp1 end; if tmp2 then move = tmp2 end;--one of these chars is the pc, and we need only him to update build/move
 	end
 	
 	return build, move
@@ -58,9 +58,8 @@ end
 function manager:draw( TS, scale, display, pc, map ) --draws all characters, including player
 	local x = display.world_x;	local y = display.world_y
 
-	if y > 0 then y = y - 1 end
-	if x > 0 then x = x - 1 end
-
+	if y > 0 then y = y - 1 end	--for drawing coming-in-to-sight npcs at -y
+	if x > 0 then x = x - 1 end --same, -x
 
 	for i=y,( y + display.height + 2 ) do
 		if i >= map.world.height_tiles then y = map.world.height_tiles - 1 end	--to keep from looking for npcs beyond the edge
