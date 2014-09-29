@@ -7,7 +7,6 @@
 local tile = {}
 tile.holds = nil
 tile.is_passable = false
-tile.is_ocpied = false
 tile.type = "nope"
 tile.all_names = { "path", "nope", "brick", "sea"}
 tile.all_types = { path = { is_passable = true,	prob = 90},
@@ -29,11 +28,9 @@ end
 
 function tile:set_ocpied( npc, clear )
 	if clear then
-		self.holds = { name = "Nobody" }
-		self.is_ocpied = false
+		self.holds = nil
 	else
 		self.holds = npc
-		self.is_ocpied = true
 	end
 		
 end
@@ -41,9 +38,7 @@ end
 
 function tile:type() return self.type end
 
-function tile:passable() return self.is_passable and not self.is_ocpied end
-
-function tile:ocpied() return self.is_ocpied end
+function tile:passable() return self.is_passable and not self.holds end
 
 function tile:get_resident() return self.holds end
 

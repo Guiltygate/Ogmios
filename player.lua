@@ -1,6 +1,6 @@
 --[[
-	Author: Eric AMes
-	Last Updated: August 3rd, 2014
+	Author: Eric Ames
+	Last Updated: September 26th, 2014
 	Purpose: Object for player character, to neaten up main.lua
 --]]
 
@@ -20,19 +20,18 @@ player.icon = ""
 player.offset_x = 0
 player.offset_y = 0
 
-player.is_attacking = false
+player.is_attacking = 0
 player.name = 'savior'
-player.stats={ fang=5, rflx=3, lung=2, inst=1, mind=1, snout=3, aura=1, blood=3, fur=1, paw=1 }
+player.stats={ fang=2, rflx=3, lung=2, inst=1, mind=1, snout=3, aura=1, blood=3, fur=1, paw=1 }
 
 player.ori = 's'
 player.given_move_comm = false
 
---=== NPC API, since the manager handles the player now =====
-player.roams = false
-player.in_party = false
+player.current_party = {}
 --==============================
 
-player.current_party = {}
+
+
 
 function player:new( icon, image, offset, TS )
 	new_player = {}
@@ -47,39 +46,78 @@ function player:new( icon, image, offset, TS )
 	new_player.world_x = offset.x
 	new_player.world_y = offset.y
 
+	rules:setup_base_calcs( new_player )
+
+	new_player.weapon = weapon:new( {name="Savior's Blade", damage=2, type='sword'} )
+
 	return new_player
 end
 
+
 function player:update_self( dt, TS, map, disp )
+
 	local build, move = self:move( map, disp )
+	self:attack( disp, map )
 	self:update_pixel( dt, TS )
+
 	return build, move
 end
 
-function player:draw( TS, scale )
-	love.graphics.draw( self.image, self.icon, (( self.offset_x * TS ) + self.pixel_x ) * scale, (( self.offset_y * TS ) + self.pixel_y - (TS / 2) ) * scale, 0, scale, scale )
+
+
+function player:draw( TS, scale )	--for health bar, max is 20px
+	local draw_position_x, draw_position_y = (self.offset_x*TS + self.pixel_x), (self.offset_y*TS + self.pixel_y - 16)
+	love.graphics.draw( self.image , self.icon , draw_position_x * scale , draw_position_y * scale , 0 , scale , scale )
+
+	if self:is_injured() then
+		local health_fill = math.ceil( (self.current_hp / self.max_hp) * 20 )
+		local G = 200 * ( health_fill / 20 ); local R = 200 - G;
+		love.graphics.setColor( R, G, 10, 255 )
+		love.graphics.rectangle( 'fill', (draw_position_x+TS)*scale , draw_position_y*scale , 2*scale, health_fill*scale)
+		love.graphics.setColor( 255, 255, 255, 255 )
+	end
+
 end
 
+
+function player:attack( disp, map )
+	if self:attacking() > 0 then 
+		ruleset:attack( self, disp, map )
+		self.is_attacking = self.is_attacking + 1 		--increase attack frame by 1
+
+		if self.is_attacking > self.weapon:num_of_hits() then 	--if all frames are complete, set to 0
+			self.is_attacking = 0
+		end
+	end
+
+end
 
 
 function player:move( map, disp )
 	local build = false;	local move = false
+	local switch_dir_only = false;
 
-	if not disp:is_moving() and not self:is_moving() and self.given_move_comm then
+	if not disp:is_moving() and not self:is_moving() and self.given_move_comm and self:attacking() == 0 then
 
 		if self.given_move_comm == 'up' or self.given_move_comm == 'w' then
+			if self.ori ~= 'n' then switch_dir_only = true end
 			self.ori = 'n';
 		elseif self.given_move_comm == 'down' or self.given_move_comm == 's' then
+			if self.ori ~= 's' then switch_dir_only = true end
 			self.ori = 's';
 		elseif self.given_move_comm == 'right' or self.given_move_comm == 'd' then
+			if self.ori ~= 'e' then switch_dir_only = true end
 			self.ori = 'e';
 		elseif self.given_move_comm == 'left' or self.given_move_comm == 'a' then
+			if self.ori ~= 'w' then switch_dir_only = true end
 			self.ori = 'w';
 		end
 
+		if switch_dir_only then switch_dir_only = false; self.give_move_comm = nil; return end
+
 		local npc = map:get_resident( self )
 
-		if (map:get_passable( self ) or ( npc and npc:pushed( self.ori, map ) )) and self.given_move_comm then
+		if self.given_move_comm and (map:get_passable( self ) or ( npc and love.keyboard.isDown('lshift') and npc:pushed( self.ori, map ) )) then
 
 			if self:disp_should_move( disp, map.world, self.ori ) then
 				map:set_tile_ocpied( self, true )
@@ -133,11 +171,11 @@ end
 
 
 function player:add_to_party( map, display, manager )
-	if map:get_ocpied( self ) then
-		local res = map:get_resident( self )
-		if res:is_friendly( self ) then
-			self.current_party[ res.name ] = res
-			res:enter_player_party()
+	target = map:get_resident( self )
+	if target then
+		if target:is_friendly( self ) then
+			self.current_party[ target.name ] = target
+			target:enter_player_party()
 		end
 	end
 
@@ -169,8 +207,9 @@ function player:get_displacement( char )	--returns positive for +xy
 	elseif char == 'y' then return ( self.from_center_y*TS ) - self.pixel_y end
 end
 
-function player:attacking( set )
-	player.is_attacking = ( set or false )
+function player:attacking( set, value )
+	if set then self.is_attacking = value end
+	return self.is_attacking
 end
 
 function player:trigger_move( key ) self.given_move_comm = key end
@@ -186,6 +225,9 @@ function player:disp_should_move( disp, world, ori )
 		return disp.world_x < (world.width_tiles - (self.offset_x*2)) and self.from_center_x == 0 
 	end
 end
+
+function player:is_injured() return ( self.current_hp < self.max_hp ) end
+function player:is_critical() return ( self.current_hp < self.max_hp / 4 ) end
 
 function player:player_should_move()
 	if self.ori == 'n' or self.ori == 's' then

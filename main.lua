@@ -24,7 +24,6 @@ local build = false
 local disp_height = 11; local disp_width = 19;
 local img_dir = "images/"
 local start_coord = {x=10, y=6}
-local fog_image
 local direction_keys = { w=true, s=true, n=true, s=true, up=true, down=true, left=true, right=true }
 
 --======================================
@@ -48,7 +47,9 @@ function love.load()							--initial values and files to load for gameplay
 
 	map:create_world( chosen_world_width, chosen_world_height )
 	map:build_tileset_batch( display, TS )
-	manager:load_npcs( "std_npc_load", pc )
+
+	manager:load_weapons()
+	manager:load_npcs( "test_npcs", pc )
 end
 
 
@@ -58,8 +59,6 @@ function love.draw()
 	--display:draw_high_layer()			--add later, for passable tiles that are "sticking up", must be drawn over characters; e.g. walls, fog, etc.
 	display:draw_text()								--and finally draw the message window
 
-	love.graphics.draw( fog_image, 5*TS, 5*TS )
-
 	debug()
 
 end
@@ -68,7 +67,7 @@ end
 function love.keypressed(key, isrepeat)
 	if direction_keys[ key ] == true then pc:trigger_move( key ) end
 	if key == "e" then interact() end	--move interact as player.lua function
-	if key == 'f' then pc:attacking( true ) end
+	if key == 'f' then pc:attacking( true, 1 ) end
 	if key == 'v' then pc:add_to_party( map, display, manager ) end
 end
 
@@ -84,7 +83,6 @@ function love.update( dt )
 	end
 
 	display:update_pixel( dt, TS, pc )
-
 end
 
 function interact()						--move as player.lua function
@@ -104,11 +102,13 @@ end
 --========== Utility Functions ================
 
 function load_libraries()
-	map = require( "map" );				tile = require( "tile" )
-	aal = require( "AnAL" );			template = require( "area_template" )
-	district = require( "district" );	player = require( "player" )
-	npc = require( "npc" );				manager = require( "manager" )
-	display = require( "disp" ):new( disp_height, disp_width, window_height, window_width )
+	map = 		require( "map" );		tile = 		require( "tile" )
+	aal = 		require( "AnAL" );		template = 	require( "area_template" )
+	district = 	require( "district" );	player = 	require( "player" )
+	npc = 		require( "npc" );		manager = 	require( "manager" )
+	rules = 	require( "ruleset" );	weapon = 	require( "weapon" )
+	os = 		require( "os" );
+	display = 	require( "disp" ):new( disp_height, disp_width, window_height, window_width )
 end
 
 function load_images()
@@ -117,11 +117,6 @@ function load_images()
 	pc_icon = love.graphics.newQuad( 0, 0, TS, TS, pc_image:getWidth(), pc_image:getHeight() )
 	local offset = { x = ((display.width/2)+0.5), y = ((display.height/2)+0.5) }
 	pc = player:new( pc_icon, pc_image, offset, TS )
-
-	--FOG TEST--
-	fog_image = love.graphics.newImage( img_dir.."bad_fog_2.png" )
-	fog_image:setFilter( "nearest" )	
-	---
 
 	map_tileset = love.graphics.newImage( img_dir.."map_tile_placeholders2.png" )
 	map_tileset:setFilter( "nearest" )
@@ -140,7 +135,6 @@ function get_tile_at_ori( char )
 		return -1, 0
 	end
 end
-
 
 function debug()
 	love.graphics.print("FPS: "..love.timer.getFPS(), 10, 20)

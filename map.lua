@@ -29,7 +29,7 @@ map.tile_images = {}
 map.world = {}
 
 
---============ Actual Functions ===========================
+--============ Game-Start Functions ===========================
 
 function map.get_type( tile_names )
 	local sum = 0;
@@ -44,7 +44,6 @@ function map.get_type( tile_names )
 		sum = sum + v
 		map.config[ k ] = sum
 	end
-
 end
 
 
@@ -96,6 +95,11 @@ function map:create_world( world_width_in_tiles, world_height_in_tiles )
 end
 
 
+
+
+
+--============ Boundary calls, tile locations, etc. ====================
+
 function map:build_tileset_batch( display, TS )			--used to more efficiently store tiles for drawing - GREATLY increases FPS!  
 	self.tileset_batch:bind()
 	self.tileset_batch:clear()
@@ -117,11 +121,10 @@ end
 
 function map:get_tile( char , y )
 	if not y then
-		--print( char.ori )
 		x,y = get_tile_at_ori( char )
-		return self.world[ char.world_x + x ][ char.world_y + y ]
+		return self:get_world_loc( char.world_x + x, char.world_y + y )
 	else
-		return self.world[ char ][ y ]
+		return self:get_world_loc( char, y )
 	end
 end
 
@@ -148,14 +151,6 @@ end
 
 
 
-function map:get_ocpied( char, y )
-	if not y then return self:get_tile( char ):ocpied()
-	else return self:get_tile( char, y ):ocpied()
-	end
-end
-
-
-
 
 
 
@@ -176,6 +171,10 @@ function map:set_tile_ocpied( npc , clear )
 	if npc then map:get_tile( npc.world_x , npc.world_y ):set_ocpied( npc, clear ) end
 end
 
-
+function map:get_world_loc( x, y )
+	if self:in_bounds( x, y ) then
+		return self.world[ x ][ y ]
+	else return nil end
+end
 
 return map

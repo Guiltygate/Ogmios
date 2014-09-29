@@ -1,12 +1,18 @@
---Not sure...
+--[[
+	Manager for npcs. Loads them at beginning, restricts them to acting in order, etc.
+	Might be expanded for weapons, haven't decided.
+]]
+
+
 
 package.path = "Ogmios/sub_objects/?.lua"
---all_npcs = require( "npc_load_file" )
+npc_loader = require( "npc_loader" )
 
 manager = {}
 manager.npcs = {}
 manager.npcs_by_rflx = {}
 manager.TS = 32
+manager.weapon_list = {}
 
 
 function manager:add_npc( create, given_npc )	--can either create a new npc, or take a given npc and add it
@@ -31,7 +37,7 @@ function manager:update( dt, TS, map, disp )
 	local build, move, tmp1, tmp2
 
 	for i,name in ipairs( self.npcs_by_rflx ) do
-		v = self.npcs[ name ]
+		v = self.npcs[ name ] 							--Give each NPC a weapon from the manager's list
 		tmp1, tmp2 = v:update_self( dt, TS, map, disp, self.npcs.savior )
 		if tmp1 then build = tmp1 end; if tmp2 then move = tmp2 end;--one of these chars is the pc, and we need only him to update build/move
 	end
@@ -41,17 +47,32 @@ end
 
 
 function manager:load_npcs( file, player )
-	local load = require( file )
+	load = npc_loader:package( file )			--call npc_loader and package all npcs for creation
+
 	for i,v in ipairs( load ) do
-		self:add_npc( true, v )
+		v.weapon = self.weapon_list[ v.weapon ]
+		self:add_npc( true, v )					--Create npcs from flatfile
 	end
+
 	self:add_npc( false, player )				--add player to "npc" list
+
 	for k,v in pairs( player.current_party ) do	--add in npcs in player's current party
 		self:add_npc( false, value )
 	end
 
 	self:build_rflx()
 	load = nil --just to ensure space is freed
+end
+
+
+function manager:load_weapons()
+	local loaded_wpns = require( "weapon_loader" )
+
+	for i,v in ipairs( loaded_wpns ) do
+		new_wpn = weapon:new( v )
+		self.weapon_list[ new_wpn.name ] = new_wpn
+	end
+
 end
 
 
@@ -65,8 +86,9 @@ function manager:draw( TS, scale, display, pc, map ) --draws all characters, inc
 		if i >= map.world.height_tiles then y = map.world.height_tiles - 1 end	--to keep from looking for npcs beyond the edge
 		for j=x, ( x + display.width + 1 ) do
 			if j >= map.world.width_tiles then y = map.world.width_tiles - 1 end
-			if map:get_ocpied( j, i ) then
-				map:get_resident( j, i ):draw( TS, scale, display )
+			target = map:get_resident( j, i )
+			if target then
+				target:draw( TS, scale, display )
 			end
 		end
 
