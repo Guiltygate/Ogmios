@@ -69,9 +69,7 @@ function weapon:get_hit_location( ori, turn_num )
 	elseif ori == 's' then
 		if dir == 'l' then return self.hit_holder.e[ num ]
 		elseif dir == 'r' then return self.hit_holder.w[ num ]
-		else 
-			print( num, self.hit_holder.s[ num ] )
-			return self.hit_holder.s[ num ] end
+		else return self.hit_holder.s[ num ] end
 
 	elseif ori == 'e' then
 		if dir == 'l' then return self.hit_holder.n[ num ]
@@ -81,7 +79,7 @@ function weapon:get_hit_location( ori, turn_num )
 	elseif ori == 'w' then
 		if dir == 'l' then return self.hit_holder.s[ num ]
 		elseif dir == 'r' then return self.hit_holder.n[ num ]
-		else return self.hit_holder.w[ num ]	 end	
+		else return self.hit_holder.w[ num ] end	
 	end
 
 end			

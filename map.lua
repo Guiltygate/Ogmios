@@ -23,7 +23,7 @@ package.path = "Ogmios/sub_objects/?.lua"
 
 local map = {}
 local map_settings = {	90, 0, 5, 5 } --enter probabilities in order corresponding to tile names from main.lua
-local TS = 32
+--local TS = 32
 map.config = {}
 map.tile_images = {}
 map.world = {}
@@ -47,7 +47,7 @@ function map.get_type( tile_names )
 end
 
 
-function map.load_map_tiles( tileset_width_in_pixels, tileset_height_in_pixels, tile_size, tile_names )
+function map.load_map_tiles( tileset_width_in_pixels, tileset_height_in_pixels, tile_names )
 	local tileset_height_in_tiles = tileset_height_in_pixels / TS
 	local tileset_width_in_tiles = tileset_width_in_pixels / TS
 
@@ -59,7 +59,7 @@ function map.load_map_tiles( tileset_width_in_pixels, tileset_height_in_pixels, 
 					break
 				else
 					local tile = tile_names[ index + 1 ]
-					map.tile_images[ tile ] = love.graphics.newQuad( x*TS, y*TS, tile_size, tile_size,
+					map.tile_images[ tile ] = love.graphics.newQuad( x*TS, y*TS, TS, TS,
 																 tileset_width_in_pixels, tileset_height_in_pixels )
 				end
 
@@ -68,7 +68,7 @@ function map.load_map_tiles( tileset_width_in_pixels, tileset_height_in_pixels, 
 end
 
 
-function map:create_world( world_width_in_tiles, world_height_in_tiles )
+function map:create_world( world_width_in_tiles, world_height_in_tiles, coll_world, TS )
 	local tile = require( "tile" )
 
 	for i=0,world_width_in_tiles-1 do
@@ -82,10 +82,9 @@ function map:create_world( world_width_in_tiles, world_height_in_tiles )
 				end
 			end
 
-			if i == 0 or j == 0 or i == world_width_in_tiles-1 or j == world_height_in_tiles-1 then 			--prototype code for boundary marking
+			if i == 0 or j == 0 or i == world_width_in_tiles-1 or j == world_height_in_tiles-1 then 	--debug code for boundary marking
 				self.world[ i ][ j ] = tile:new( "sea" )
 			end
-
 		end
 	end
 
@@ -100,12 +99,12 @@ end
 
 --============ Boundary calls, tile locations, etc. ====================
 
-function map:build_tileset_batch( display, TS )			--used to more efficiently store tiles for drawing - GREATLY increases FPS!  
+function map:build_tileset_batch( display )			--used to more efficiently store tiles for drawing - GREATLY increases FPS!  
 	self.tileset_batch:bind()
 	self.tileset_batch:clear()
 
-	for i=-1,( display.width  ) do
-		for j=-1,( display.height ) do
+	for i=-1,( display.width + 1 ) do
+		for j=-1,( display.height + 1 ) do
 			x_map_pos = i + display.world_x
 			y_map_pos = j + display.world_y
 
@@ -145,8 +144,8 @@ end
 
 
 
-function map:get_tile_text( player )
-	return self:get_tile( player ):get_speech()
+function map:get_tile_text( x , y )
+	return self:get_tile( x , y ):get_speech()
 end
 
 
@@ -171,8 +170,8 @@ function map:set_tile_ocpied( npc , clear )
 	if npc then map:get_tile( npc.world_x , npc.world_y ):set_ocpied( npc, clear ) end
 end
 
-function map:get_world_loc( x, y )
-	if self:in_bounds( x, y ) then
+function map:get_world_loc( x , y )
+	if self:in_bounds( x , y ) then
 		return self.world[ x ][ y ]
 	else return nil end
 end

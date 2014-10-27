@@ -19,16 +19,16 @@ end
 function ruleset:setup_base_calcs( char )
 	local stats = char.stats
 
-	char.max_hp = stats.lung * stats.blood * 2	--set max and current health
+	char.max_hp = stats.Lung * stats.Blood * 2	--set max and current health
 	char.current_hp = char.max_hp
 
 end
 
-function ruleset:attack( attacker, disp, map )
+function ruleset:attack( attacker ,  map )
 	local weapon = attacker.weapon
-	local stat_dmg = self:d( 4, attacker.stats.fang )
+	local stat_dmg = self:d( 4, attacker.stats.Fang )
 
-	if not attacker:is_moving() and ( not disp or ( disp and not disp:is_moving() ) ) then
+	if not attacker:is_moving() then
 		x,y,wpn_dmg = weapon:strike( attacker )
 		x,y = x+attacker.world_x, attacker.world_y+y
 		target = map:get_resident( x, y )
@@ -38,7 +38,6 @@ function ruleset:attack( attacker, disp, map )
 			total_damage = stat_dmg + wpn_dmg - target:armor()
 			target:wound( total_damage )
 		end
-
 	end
 end
 

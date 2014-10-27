@@ -1,29 +1,137 @@
-This won't be directly told to the player.
+This won't be directly told to the player, but can be mostly inferred through tidbits.
 
-The Pale One, a human bio-engineer, creates 7 new species, each genetically based off of humanity.
-Each is named jokingly after a previous animal race.
+The game takes place on a single planet, unnamed.
 
-	Mouse	-	furry, 5 large petal-like ears come from their neck.)
-	Badger	-	large, muscular, four large horns present on male heads.
-	Hedgehog-	
-	Hare	-	Not much has changed, but thinner and prone to run towards enemies rather than away.
-	Wolf	-	Sports a 
-	Fox		-	
-	Mole	-	
 
-The Pale One brings the forefathers of the races to life and raises them in Ur, named after the Cradle from
-human history.
 
-He briefly instructs some of them, once old enough, in how to manage the nanites and racial conciousness.
-As time passes, some of the tribes develop community roles around these.
 
-	Shamans are those who work with Nature to change the landscape and develop golems.
-		Terraforming and artificial life are products of the nanites, which are manipulated by the Shamans via (thought).
-		Takes Stamina.
+I. Beginning of the Protos and their Cycle of Life
 
-	Witches are those who force souls to do their bidding, cursing and harming others.
-		This is done by the Witches drawing complex patterns, which instruct any present nanites to what functions
-		are required of them.
+This planet developed life, having a fairly uniform temperature (by planetary scale) and an
+environment not prone to constant severe upheavals. The life here formed very similarly to Earth's,
+being both an oxygen-rich planet and containing large water reserves.
 
-	Hymnists heal and soothe others, going to double-check when I get back.
+One key difference was a weak, ever-present electrical charge (ref. as Aura). It permeated the environment
+due to a combination of constant atmospheric charge and a large deposit of trace minerals in the soil. The life that
+formed under these conditions, naturally, could not form without some form of resilience or other defense against
+both of these, as the Aura tended to disrupte any internal electrical signals and the mineral tended to
+inhibit growth in most creatures (though not all).
 
+
+	SIDE NOTE: These trace minerals are not natural to the planet's surface- the last great cycle of life was ended
+	during heavy seismetic upheaval, which caused a non-trivial amount of the mineral to burst up to the surface.
+	Later this mineral is referred to as 'geastl'. It's non-toxic, but impedes growth enough to be a detriment to most life.
+
+
+While all beings that developed in the primordial soup did have such mechanisms, many also managed 
+to harness this environmental effect to their benefit. Some species used the Aura as an additional,
+minor source of energy to complement other sources such as feeding. One species, which later down the evolutionary tree
+split into seperate sub-species, developed an especially useful internal mechanism.
+
+This species, which I'll refer to internally as Protos, developed a method of dealing with the detriment of the geastl mineral
+and constructively harnassing the latent atmospheric charge by funneling all consumed traces of geastl into a small liquid-filled chamber
+near the center of their bio-mass. Here, the geastl was rendered harmless to the Protos, but also allowed them access to the
+Aura it partially created. As a Proto grew up, this chamber filled with more geastl, which was compacted together
+into microscopic, intricate latticework structures by the constant charge enacted on them, forming into cloudy amber crystals.
+
+	REMINDER: geastl + eletrical source = weak electrical field between them, i.e. "Aura"
+
+
+
+
+II. Vanishing of Geastl Deposits
+
+As said before, geastl is not native to the planet's surface. As hundreds of thousand of years passed, no more significant deposits
+were thrown to the surface, and the traces of it on land gradually disappeared into the ocean via the water cycle.
+
+This caused a fluctuation in Aura, as the charge began to build up more heavily over the oceans, but dissipitate from
+land entirely. The Protos and other species that had come to depend on this latent charge found themselves weaker by degrees
+over the next several hundred years. At this point the Protos have a basic shamnistic society.
+
+	SIDE NOTE: The evolution of the Protos to live with and use geastl and the Aura began at their primordial conception, over
+		millions of years. This sudden decrease in geastl, however, became noticeable over only about 500 years- much too quickly
+		for the Protos, or any race, to evolve a different way of life.
+
+Near the beginning, when the change was first noticed, the Protos found a variety of cultural reasons for the phenomenon.
+Coincidentally, among the many aspects of the dead they worshipped, the small crystal deposit of geastl found within the dead
+was also revered. One of the Protos many ceremonies involved consuming this crystal. While before this had had no noticeable effect,
+now with the weakening Aura, those Protos taking part in the ceremony began to show greater energy and strength than their kin.
+As they now had a greater storage of geastl, they generated closely around them a greater (though still quite weak) field.
+They were now favored by macro-evolution, as they lived longer and had greater chance to reproduce.
+
+	SUMMATION: Protos and other races now indirectly fought for whatever geastl was left in the environment. Protos actually
+	fought one another over the rights to consume their own dead in an effort to increase their geastl.
+
+
+
+
+III. Side-Effects of Full-Geastl Consumption
+
+Before this 'revelation', geastl had only been consumed by accident, mixed in with common foods. Now that the Protos began comsuming
+already-formed crystals of geastl, they came to discover a number of side effects.
+
+In the original Protos, as the crystal formed within them from micro-fragments of geastl, it was formed into its unique shape
+by the charge enacted between it and the atmosphere, along with the chemical balances of the internal liquid it was floating in and any
+internal charge created by the Proto's body.
+
+This led to the Proto's geastl shard being uniquely formed depending on both it's chemical composition and somewhat by the electrical
+signals produced during its lifetime - just an interesting sidenote?
+
+But the reverse turned out to be true as well- upon consumption in younger Protos, full geastl shards from the dead reflected and stored charge
+in such a way as to alter the chemical structures in the liquid, thus impacting the growth of the Proto a great deal.
+
+This was first noticed, it was later reported by the Souless One, when a Proto known for his distinctive coloring died young without heirs,
+leaving his friend his geastl. The friend was young enough that, a few years later, he began developing the same coloration, depesite it
+not running in his family pack.
+
+The physical and mental composition of a Proto due to Nature, not Nurture, tend to carry over about 80% of the time from the originator
+of the geastl, and after a certain age, have little effect on how the Proto grows.
+
+At ANY age, however, just having a geastl gives one a significant (though not enormous) surplus of physical vitality when compered to a standard
+Proto, much as if humans, in addition to eating, could photosynthesize as plants do.
+
+	NAMING CONVENTION: The mineral is known as "geastl", but given it's extreme rarity outside of a host, the term later comes to refer
+		to that internal crystalline object Protos contain. Saying "geastl" or "geastl shard" refers to such a structure.
+		Unformed geastl are either called just that, or a geastl 'fragment', meaning it hasn't been merged with other geastl inside a host.
+
+
+
+
+IV. The Souless Arrive
+
+It's at this point, about 800 years or so before Ogmios's time, that humans first arrive on this planet. Or rather, a human.
+
+The Souless One was a human bio-engineer, fleeing the destruction of his species by themselves.
+
+It doesn't take long for him to discover the Protos and become intrigued. Their form of ancestor-worship, consuming the
+geastl of their kin, isn't unique, but the side-effects certainly are. Upon learning a Proto's geastl passes down not
+just bodily manipulation, but also trace memories and feelings, SO is further intrigued- after all, biologic
+reincarnation is, safe to say, quite unique.
+
+SO's goal upon traveling here was to re-create his race, the 'Souless Ones' as the Proto's call them after a 
+misunderstanding of SO's explanation. But he is quickly flummoxed by the fact there is no more geastl present on the surface- and
+while he brought a great deal of technology, he did not possess either mining equipment or deep-sea exploration tools.
+
+But there is a great deal of geastl, and very close by, which would also allow the new humans to adopt to their new planet quite
+easily. And thus those among the Proto's in possession of a soul were slain, and the Souless One fled across the world with
+his new hoard of souls, and began to fashion a new race of humans that, while they might physically die, would never truly perish.
+
+
+
+
+V. Present Day
+
+Unlike the Proto's, now known under a different name, the 7 hybrid races of the Souless One reproduce at human-like
+rate; that is, quickly. Geastls aren't rare, per se, but many do not have one. These lesser ones are shunned as Souless, and
+attribute their misfortune to a figure from their legend, a dark being known as the Souless One, who stole their souls.
+
+Irony's funny, isn't it?
+
+
+
+Haven't decided which, if any, of the 7 races will be the original Protos, who haven't made the connection between the SO and the other
+6 races.
+
+7 races: Badger, Hedgehog, Hare, Mouse, Mole, Fox, Wolf. Subject to change.
+
+Still need new desc

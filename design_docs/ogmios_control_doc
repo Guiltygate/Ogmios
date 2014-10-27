@@ -51,6 +51,12 @@ Timeline:
 		-Also improve ally "pathfinding".
 
 	3) Player interaction, so assigning units to areas, and having them come back at the end of the conflict.
+		Still need
+			-'wound' animations
+			-delay while attack completes
+			-stagger threashold
+			-stagger animations
+			-how to make combat satisfactory? And real-time? Do I want it to be real-time?
 
 	MAP MILESTONE: At this point, should have an ugly-but-working overworld map with distinct areas in each province that can be clicked on and chosen for unit deployment. The units will leave the player's roster and move towards the event, and then be un-selectable for the duration of the event. Similar to RISK.
 

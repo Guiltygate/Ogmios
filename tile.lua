@@ -36,7 +36,7 @@ function tile:set_ocpied( npc, clear )
 end
 
 
-function tile:type() return self.type end
+function tile:get_type() return self.type end
 
 function tile:passable() return self.is_passable and not self.holds end
 

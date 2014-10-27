@@ -13,16 +13,17 @@ npc_loader = {}
 img_dir = "images/"
 TS = 32
 npc_loader.parameter = { "name", "image", "world_x", "world_y", "weapon", "speech", "roams", "faction", "stats" }
+--add in mood at some point?
 
-
+--Fang, Reflex, Lung, Instinct, Mind, Snout, Aura, Blood, Fur, Paw
 npc_loader.role_templates = {
-	w_knight = { stats={ fang=5, rflx=3, lung=3, inst=1, mind=1, snout=3, aura=1, blood=3, fur=1, paw=1 }, faction='ally' }
+	w_knight = { stats={ 5, 3, 3, 1, 1, 3, 1, 3, 1, 1 }, faction='ally' }
 	,f_knight = {}
-	,vagabond = { stats={ fang=3, rflx=4, lung=2, inst=1, mind=1, snout=3, aura=1, blood=4, fur=1, paw=3 }, faction='foe' }
+	,vagabond = { stats={ 3, 4, 2, 1, 1, 3, 1, 4, 1, 3 }, faction='foe' }
 }
 
 
-function npc_loader:package( file )
+function npc_loader:package( file , stats_master )
 	template = nil
 	npcs = require( file )
 
@@ -36,6 +37,7 @@ function npc_loader:package( file )
 				template = npc[j]
 			elseif j > 7 then
 				new_npc[ value ] = self.role_templates[ template ][ value ]
+				if j == 9 then self:package_stats( new_npc , stats_master ) end
 			else
 				new_npc[ value ] = npc[ j ]
 			end
@@ -44,6 +46,16 @@ function npc_loader:package( file )
 	end
 
 	return loaded_npcs
+end
+
+
+function npc_loader:package_stats( npc , stats_master )
+	local stats = {}
+
+	for i,v in ipairs( stats_master ) do
+		stats[ v ] = npc.stats[ i ]
+	end
+	npc.stats = stats
 end
 
 
